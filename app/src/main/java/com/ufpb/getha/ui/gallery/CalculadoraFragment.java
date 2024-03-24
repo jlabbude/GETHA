@@ -10,23 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.ufpb.getha.databinding.FragmentGalleryBinding;
+import com.ufpb.getha.databinding.FragmentCalculadoraBinding;
 
-public class GalleryFragment extends Fragment {
+public class CalculadoraFragment extends Fragment {
 
-    private FragmentGalleryBinding binding;
+    private FragmentCalculadoraBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        GalleryViewModel galleryViewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
+        CalculadoraViewModel calculadoraViewModel = new ViewModelProvider(this).get(CalculadoraViewModel.class);
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        binding = FragmentCalculadoraBinding.inflate(inflater, container, false);
 
         View root = binding.getRoot();
 
         final TextView textView = binding.textGallery;
 
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        calculadoraViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         return root;
     }

@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.ufpb.getha.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_calculadora"
+        android:name="com.ufpb.getha.ui.gallery.CalculadoraFragment"
+        android:label="@string/menu_calculadora"
+        tools:layout="@layout/fragment_calculadora" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.ufpb.getha.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_aparelhos"
+        android:name="com.ufpb.getha.ui.slideshow.AparelhosFragment"
+        android:label="@string/menu_aparelhos"
+        tools:layout="@layout/fragment_aparelhos" />
 </navigation>
