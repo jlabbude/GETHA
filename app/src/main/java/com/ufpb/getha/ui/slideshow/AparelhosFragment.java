@@ -2,11 +2,14 @@ package com.ufpb.getha.ui.slideshow;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.MenuPopupWindow;
@@ -32,12 +35,14 @@ public class AparelhosFragment extends Fragment {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 //MenuPopupWindow.MenuDropDownListView menu = new MenuPopupWindow.MenuDropDownListView(getContext());
+                v.findViewById(R.id.button).setOnClickListener(v1 -> {
 
-                //menu.show();
+                    PopupMenu popup = new PopupMenu(getContext(), v);
+                    popup.getMenuInflater().inflate(R.menu.actions, popup.getMenu());
+                    popup.show();
+                });
             }
         });
-
 
         return root;
     }
