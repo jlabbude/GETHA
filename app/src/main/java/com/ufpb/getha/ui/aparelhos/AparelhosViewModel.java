@@ -1,4 +1,4 @@
-package com.ufpb.getha.ui.slideshow;
+package com.ufpb.getha.ui.aparelhos;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

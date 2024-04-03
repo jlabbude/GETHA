@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_home">
+    <include app:graph="@navigation/aparelhos_navigation" />
 
     <fragment
         android:id="@+id/nav_home"
@@ -19,7 +20,13 @@
 
     <fragment
         android:id="@+id/nav_aparelhos"
-        android:name="com.ufpb.getha.ui.slideshow.AparelhosFragment"
+        android:name="com.ufpb.getha.ui.aparelhos.AparelhosFragment"
         android:label="@string/menu_aparelhos"
-        tools:layout="@layout/fragment_aparelhos" />
+        tools:layout="@layout/fragment_aparelhos" >
+        <action
+            android:id="@+id/action_manual"
+            app:destination="@id/nav_manual" />
+    </fragment>
+
+
 </navigation>
