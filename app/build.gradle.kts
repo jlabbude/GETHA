@@ -6,6 +6,12 @@ android {
     namespace = "com.ufpb.getha"
     compileSdk = 34
 
+    aaptOptions {
+        noCompress("pdf")
+    }
+
+ androidResources
+
     defaultConfig {
         applicationId = "com.ufpb.getha"
         minSdk = 27
