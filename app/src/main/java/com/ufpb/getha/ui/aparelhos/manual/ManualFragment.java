@@ -5,6 +5,8 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,6 +30,10 @@ public class ManualFragment extends Fragment {
     private PdfRenderer pdfRenderer;
     private PdfRenderer.Page currentPage;
     private int currentPageIndex = 0;
+
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+
 
     @Nullable
     @Override
@@ -77,9 +83,16 @@ public class ManualFragment extends Fragment {
 }
 
     private void showPage(int index) {
+
+        ImageView imageView = ((ImageView) binding.getRoot().findViewById(R.id.pdf_image));
+
+
         if (currentPage != null) {
             currentPage.close();
+            imageView.setScaleY(1);
+            imageView.setScaleX(1);
         }
+
         if (currentPageIndex >= 0 && currentPageIndex < pdfRenderer.getPageCount()) {
             currentPage = pdfRenderer.openPage(index);
         } else {
@@ -89,8 +102,35 @@ public class ManualFragment extends Fragment {
         Bitmap bitmap = Bitmap.createBitmap(currentPage.getWidth(), currentPage.getHeight(),
                 Bitmap.Config.ARGB_8888);
         currentPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-        ((ImageView) binding.getRoot().findViewById(R.id.pdf_image)).setImageBitmap(bitmap);
+
+        scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(@NonNull ScaleGestureDetector detector) {
+                scaleFactor *= detector.getScaleFactor();
+
+                // Limit zoom range
+                scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
+
+                // Set scale to ImageView
+                imageView.setScaleX(scaleFactor);
+                imageView.setScaleY(scaleFactor);
+
+                return true;
+            }
+        });
+
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                scaleGestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
+
+        imageView.setImageBitmap(bitmap);
     }
+
+    // ScaleListener class
 
     @Override
     public void onDestroy() {
