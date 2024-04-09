@@ -32,8 +32,7 @@ public class ManualFragment extends Fragment {
     private int currentPageIndex = 0;
 
     private ScaleGestureDetector scaleGestureDetector;
-    private float scaleFactor = 1.0f;
-
+    private float scaleFactor = 1f;
 
     @Nullable
     @Override
@@ -66,25 +65,25 @@ public class ManualFragment extends Fragment {
     }
 
     private void openRenderer() throws IOException {
-    File file = new File(requireActivity().getFilesDir(), "lista.pdf");
-    if (!file.exists()) {
-        InputStream asset = requireActivity().getAssets().open("lista.pdf");
-        FileOutputStream output = new FileOutputStream(file);
-        final byte[] buffer = new byte[1024];
-        int size;
-        while ((size = asset.read(buffer)) != -1) {
-            output.write(buffer, 0, size);
+        File file = new File(requireActivity().getFilesDir(), "lista.pdf");
+        if (!file.exists()) {
+            InputStream asset = requireActivity().getAssets().open("lista.pdf");
+            FileOutputStream output = new FileOutputStream(file);
+            final byte[] buffer = new byte[1024];
+            int size;
+            while ((size = asset.read(buffer)) != -1) {
+                output.write(buffer, 0, size);
+            }
+            asset.close();
+            output.close();
         }
-        asset.close();
-        output.close();
+        ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+        pdfRenderer = new PdfRenderer(fileDescriptor);
     }
-    ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-    pdfRenderer = new PdfRenderer(fileDescriptor);
-}
 
     private void showPage(int index) {
 
-        ImageView imageView = ((ImageView) binding.getRoot().findViewById(R.id.pdf_image));
+        ImageView imageView = binding.getRoot().findViewById(R.id.pdf_image);
 
 
         if (currentPage != null) {
@@ -104,20 +103,35 @@ public class ManualFragment extends Fragment {
         currentPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
         scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            float focusX;
+            float focusY;
+
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                // Calculate focus point coordinates when scaling begins
+                focusX = detector.getFocusX();
+                focusY = detector.getFocusY();
+                return true;
+            }
+
             @Override
             public boolean onScale(@NonNull ScaleGestureDetector detector) {
+
                 scaleFactor *= detector.getScaleFactor();
 
-                // Limit zoom range
                 scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
 
-                // Set scale to ImageView
+                imageView.setPivotX(detector.getFocusX());
+                imageView.setPivotY(detector.getFocusY());
+
                 imageView.setScaleX(scaleFactor);
                 imageView.setScaleY(scaleFactor);
 
                 return true;
             }
+
         });
+
 
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -125,6 +139,7 @@ public class ManualFragment extends Fragment {
                 scaleGestureDetector.onTouchEvent(event);
                 return true;
             }
+
         });
 
         imageView.setImageBitmap(bitmap);
