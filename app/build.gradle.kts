@@ -42,6 +42,7 @@ android {
 
 dependencies {
 
+    implementation(libs.gestureview)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)

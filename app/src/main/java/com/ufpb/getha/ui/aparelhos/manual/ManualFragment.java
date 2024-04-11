@@ -1,9 +1,11 @@
 package com.ufpb.getha.ui.aparelhos.manual;
 
+import android.gesture.Gesture;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -16,6 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.alexvasilkov.gestures.Settings;
+import com.alexvasilkov.gestures.views.GestureImageView;
+import com.alexvasilkov.gestures.views.interfaces.GestureView;
 import com.ufpb.getha.R;
 import com.ufpb.getha.databinding.FragmentManualBinding;
 
@@ -30,9 +35,6 @@ public class ManualFragment extends Fragment {
     private PdfRenderer pdfRenderer;
     private PdfRenderer.Page currentPage;
     private int currentPageIndex = 0;
-
-    private ScaleGestureDetector scaleGestureDetector;
-    private float scaleFactor = 1f;
 
     @Nullable
     @Override
@@ -83,13 +85,11 @@ public class ManualFragment extends Fragment {
 
     private void showPage(int index) {
 
-        ImageView imageView = binding.getRoot().findViewById(R.id.pdf_image);
-
+        GestureImageView gestureImageView = binding.getRoot().findViewById(R.id.pdf_image);
 
         if (currentPage != null) {
             currentPage.close();
-            imageView.setScaleY(1);
-            imageView.setScaleX(1);
+            gestureImageView.getController().resetState();
         }
 
         if (currentPageIndex >= 0 && currentPageIndex < pdfRenderer.getPageCount()) {
@@ -102,50 +102,22 @@ public class ManualFragment extends Fragment {
                 Bitmap.Config.ARGB_8888);
         currentPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
-        scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            float focusX;
-            float focusY;
+        gestureImageView.setImageBitmap(bitmap);
 
-            @Override
-            public boolean onScaleBegin(ScaleGestureDetector detector) {
-                // Calculate focus point coordinates when scaling begins
-                focusX = detector.getFocusX();
-                focusY = detector.getFocusY();
-                return true;
-            }
-
-            @Override
-            public boolean onScale(@NonNull ScaleGestureDetector detector) {
-
-                scaleFactor *= detector.getScaleFactor();
-
-                scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
-
-                imageView.setPivotX(detector.getFocusX());
-                imageView.setPivotY(detector.getFocusY());
-
-                imageView.setScaleX(scaleFactor);
-                imageView.setScaleY(scaleFactor);
-
-                return true;
-            }
-
-        });
-
-
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                scaleGestureDetector.onTouchEvent(event);
-                return true;
-            }
-
-        });
-
-        imageView.setImageBitmap(bitmap);
+        gestureImageView.getController().getSettings()
+            .setMaxZoom(10f)
+            .setDoubleTapZoom(-1f)
+            .setPanEnabled(true)
+            .setZoomEnabled(true)
+            .setDoubleTapEnabled(true)
+            .setRotationEnabled(false)
+            .setRestrictRotation(false)
+            .setOverscrollDistance(0f, 0f)
+            .setOverzoomFactor(2f)
+            .setFillViewport(false)
+            .setFitMethod(Settings.Fit.INSIDE)
+            .setGravity(Gravity.CENTER);
     }
-
-    // ScaleListener class
 
     @Override
     public void onDestroy() {

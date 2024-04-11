@@ -6,10 +6,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.aparelhos.manual.ManualFragment">
 
-    <ImageView
-        android:id="@+id/pdf_image"
+    <com.alexvasilkov.gestures.views.GestureImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/pdf_image"
+        >
+    </com.alexvasilkov.gestures.views.GestureImageView>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
     <Button
         android:id="@+id/next_button"
