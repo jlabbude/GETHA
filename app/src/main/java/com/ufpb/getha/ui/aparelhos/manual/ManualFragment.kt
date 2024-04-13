@@ -16,6 +16,7 @@ import com.ufpb.getha.R
 import com.ufpb.getha.databinding.FragmentManualBinding
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -54,17 +55,20 @@ class ManualFragment : Fragment() {
         val file = File(requireActivity().filesDir, "lista.pdf")
         if (!file.exists()) {
             val asset: InputStream = requireActivity().assets.open("lista.pdf")
-            val output:OutputStream = FileOutputStream(file)
-            val buffer = ByteArray(1024)
-            val size: Int = asset.read(buffer)
-            while (size != -1) {
-                output.write(buffer, 0, size)
+            val output: OutputStream = FileOutputStream(file)
+            try {
+                val buffer = ByteArray(1024)
+                var size: Int
+                while (asset.read(buffer).also { size = it } != -1) {
+                    output.write(buffer, 0, size)
+                }
+                asset.close()
+                output.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-            asset.close()
-            output.close()
         }
-        val fileDescriptor: ParcelFileDescriptor  = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-        pdfRenderer = PdfRenderer(fileDescriptor)
+        pdfRenderer = PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY))
     }
 
     private fun showPage() {
