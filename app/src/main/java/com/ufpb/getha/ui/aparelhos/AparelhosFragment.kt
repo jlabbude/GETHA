@@ -24,6 +24,9 @@ class AparelhosFragment : Fragment() {
         binding = FragmentAparelhosBinding.inflate(inflater, container, false)
         val root: View = binding!!.getRoot()
         val imageButton = root.findViewById<ImageButton>(R.id.button)
+
+        imageButton.setImageBitmap(aparelhosViewModel.getBitmap(requireContext()))
+
         imageButton.setOnClickListener { v: View? ->
             val popup = PopupMenu(context, v)
             popup.menuInflater.inflate(R.menu.actions, popup.menu)
@@ -46,4 +49,5 @@ class AparelhosFragment : Fragment() {
         super.onDestroyView()
         binding = null
     }
+
 }

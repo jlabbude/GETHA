@@ -9,7 +9,7 @@ class CalculadoraViewModel : ViewModel() {
 
     init {
         mText = MutableLiveData()
-        mText.value = "This is gallery fragment"
+        mText.value = "TODO"
     }
 
     val text: LiveData<String>

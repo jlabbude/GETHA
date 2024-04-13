@@ -9,7 +9,7 @@ class HomeViewModel : ViewModel() {
 
     init {
         mText = MutableLiveData()
-        mText.value = "This is home fragment"
+        mText.value = "TODO"
     }
 
     val text: LiveData<String>

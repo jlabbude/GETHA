@@ -57,7 +57,7 @@ class ManualFragment : Fragment() {
             val asset: InputStream = requireActivity().assets.open("lista.pdf")
             val output: OutputStream = FileOutputStream(file)
             try {
-                val buffer = ByteArray(1024)
+                val buffer = ByteArray(2024)
                 var size: Int
                 while (asset.read(buffer).also { size = it } != -1) {
                     output.write(buffer, 0, size)
