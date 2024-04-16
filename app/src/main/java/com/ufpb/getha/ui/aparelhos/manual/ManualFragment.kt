@@ -4,11 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import com.alexvasilkov.gestures.Settings
 import com.alexvasilkov.gestures.views.GestureImageView
@@ -25,28 +26,16 @@ class ManualFragment : Fragment() {
 
     private var binding: FragmentManualBinding? = null
     private lateinit var pdfRenderer: PdfRenderer
-    private var currentPage: PdfRenderer.Page? = null
-    private var currentPageIndex: Int = 0
+    private var pagesLayout: LinearLayout? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentManualBinding.inflate(inflater, container, false)
-        val root: View = binding!!.getRoot()
+        val root: View = binding!!.root
 
-        val nextButton: Button = root.findViewById(R.id.next_button)
-        val previousButton: Button = root.findViewById(R.id.previous_button)
-
-        nextButton.setOnClickListener {
-            currentPageIndex++
-            showPage()
-        }
-
-        previousButton.setOnClickListener {
-            currentPageIndex--
-            showPage()
-        }
+        pagesLayout = root.findViewById(R.id.pages_layout)
 
         openRenderer()
-        showPage()
+        showPages()
 
         return root
     }
@@ -71,53 +60,49 @@ class ManualFragment : Fragment() {
         pdfRenderer = PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY))
     }
 
-    private fun showPage() {
+    private fun showPages() {
+        val pageCount = pdfRenderer.pageCount
+        val displayMetrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val pageHeight = displayMetrics.heightPixels  // Adjust this if needed
 
-        val gestureImageView: GestureImageView  = binding!!.getRoot().findViewById(R.id.pdf_image)
+        val layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            pageHeight
+        )
 
-        if (currentPage != null) {
-            currentPage!!.close()
-            gestureImageView.controller.resetState()
+        for (i in 0 until pageCount) {
+            val page = pdfRenderer.openPage(i)
+            val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
+            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            page.close()
+
+            val imageView = GestureImageView(requireContext())
+            imageView.layoutParams = layoutParams
+            imageView.setImageBitmap(bitmap)
+
+            imageView.controller.settings
+                .setMaxZoom(10f)
+                .setDoubleTapZoom(-1f)
+                .setPanEnabled(true)
+                .setZoomEnabled(true)
+                .setDoubleTapEnabled(true)
+                .setRotationEnabled(false)
+                .setRestrictRotation(false)
+                .setOverscrollDistance(0f, 0f)
+                .setOverzoomFactor(2f)
+                .setFillViewport(false)
+                .setFitMethod(Settings.Fit.INSIDE)
+                .setGravity(Gravity.CENTER)
+
+            pagesLayout?.addView(imageView)
         }
-
-
-        if (currentPageIndex < 0) {
-            currentPageIndex = pdfRenderer.pageCount - 1
-        }
-        else if (currentPageIndex >= pdfRenderer.pageCount) {
-            currentPageIndex = 0
-        }
-
-        currentPage = pdfRenderer.openPage(currentPageIndex)
-
-        val bitmap: Bitmap = Bitmap.createBitmap(currentPage!!.width, currentPage!!.height,
-                Bitmap.Config.ARGB_8888)
-        currentPage!!.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-
-        gestureImageView.setImageBitmap(bitmap)
-
-        gestureImageView.controller.settings
-            .setMaxZoom(10f)
-            .setDoubleTapZoom(-1f)
-            .setPanEnabled(true)
-            .setZoomEnabled(true)
-            .setDoubleTapEnabled(true)
-            .setRotationEnabled(false)
-            .setRestrictRotation(false)
-            .setOverscrollDistance(0f, 0f)
-            .setOverzoomFactor(2f)
-            .setFillViewport(false)
-            .setFitMethod(Settings.Fit.INSIDE)
-            .setGravity(Gravity.CENTER)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         try {
             pdfRenderer.close()
-            if (currentPage != null) {
-                currentPage!!.close()
-            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
