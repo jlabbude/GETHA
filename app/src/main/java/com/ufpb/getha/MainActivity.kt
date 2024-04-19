@@ -20,11 +20,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.getRoot())
         setSupportActionBar(binding!!.appBarMain.toolbar)
-        binding!!.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "TODO", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
-        }
         val drawer = binding!!.drawerLayout
         val navigationView = binding!!.navView
         // Passing each menu ID as a set of Ids because each

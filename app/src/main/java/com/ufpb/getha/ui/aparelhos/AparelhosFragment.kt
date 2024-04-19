@@ -29,7 +29,7 @@ class AparelhosFragment : Fragment() {
 
         imageButton.setOnClickListener { v: View? ->
             val popup = PopupMenu(context, v)
-            popup.menuInflater.inflate(R.menu.actions, popup.menu)
+            popup.menuInflater.inflate(R.menu.popupmenu_aparelhos, popup.menu)
             popup.show()
             val navController =
                 findNavController(requireActivity(), R.id.nav_host_fragment_content_main)
@@ -37,6 +37,10 @@ class AparelhosFragment : Fragment() {
             popup.setOnMenuItemClickListener { item: MenuItem ->
                 if (item.itemId == R.id.action_manual) {
                     navController.navigate(R.id.nav_manual)
+                    return@setOnMenuItemClickListener true
+                }
+                else if (item.itemId == R.id.action_video) {
+                    navController.navigate(R.id.nav_video)
                     return@setOnMenuItemClickListener true
                 }
                 false

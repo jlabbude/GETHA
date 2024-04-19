@@ -11,6 +11,10 @@ android {
         noCompress("pdf")
     }
 
+    buildFeatures {
+        compose = true
+    }
+
  androidResources
 
     defaultConfig {
@@ -47,7 +51,6 @@ android {
 dependencies {
 
     implementation(libs.gestureview)
-    implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
@@ -55,7 +58,18 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation("androidx.core:core-ktx:+")
+    implementation(libs.media3.ui)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.exoplayer.core)
+    implementation(libs.exoplayer.ui)
+    implementation(libs.mediassesion)
+    implementation(libs.design)
+    implementation(libs.ui)
+    implementation(libs.foundation)
+    implementation(libs.tooling)
+    implementation(libs.compmaterial)
 }

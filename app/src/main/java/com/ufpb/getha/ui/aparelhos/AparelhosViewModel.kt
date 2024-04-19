@@ -15,7 +15,7 @@ class AparelhosViewModel : ViewModel() {
 
         try{
             val assetManager = context.assets
-            val inputStream = assetManager.open("aparelhosfotos/banho-histologico-1.png")
+            val inputStream = assetManager.open("aparelhosfotos/aparelhofototeste.png")
             mImageButton.value = BitmapFactory.decodeStream(inputStream)
             inputStream.close()
         } catch (e: IOException){
