@@ -5,107 +5,104 @@ import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.util.DisplayMetrics
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import com.alexvasilkov.gestures.Settings
-import com.alexvasilkov.gestures.views.GestureImageView
-import com.ufpb.getha.R
-import com.ufpb.getha.databinding.FragmentManualBinding
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
+@Composable
+fun PdfPages(pages: List<Bitmap>) {
+    val scale = remember { mutableFloatStateOf(1f) }
+    val offsetX = remember { mutableFloatStateOf(0f) }
+    val offsetY = remember { mutableFloatStateOf(0f) }
 
-class ManualFragment : Fragment() {
-
-    private var binding: FragmentManualBinding? = null
-    private lateinit var pdfRenderer: PdfRenderer
-    private var pagesLayout: LinearLayout? = null
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentManualBinding.inflate(inflater, container, false)
-        val root: View = binding!!.root
-
-        pagesLayout = root.findViewById(R.id.pages_layout)
-
-        openRenderer()
-        showPages()
-
-        return root
-    }
-
-    private fun openRenderer() {
-        val file = File(requireActivity().filesDir, "lista.pdf")
-        if (!file.exists()) {
-            val asset: InputStream = requireActivity().assets.open("lista.pdf")
-            val output: OutputStream = FileOutputStream(file)
-            try {
-                val buffer = ByteArray(2024)
-                var size: Int
-                while (asset.read(buffer).also { size = it } != -1) {
-                    output.write(buffer, 0, size)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    scale.floatValue = (scale.floatValue * zoom).coerceIn(1f, 3f)
+                    offsetX.floatValue += pan.x
+                    offsetY.floatValue += pan.y
                 }
-                asset.close()
-                output.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
+            }
+            .graphicsLayer(
+                scaleX = scale.floatValue,
+                scaleY = scale.floatValue,
+                translationX = offsetX.floatValue,
+                translationY = offsetY.floatValue
+            )
+    ) {
+        LazyColumn {
+            items(pages) { page ->
+                PdfPageImage(page)
             }
         }
-        pdfRenderer = PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY))
+    }
+}
+@Composable
+fun PdfPageImage(bitmap: Bitmap) {
+    Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
+}
+
+class ManualFragment : Fragment() {
+    private lateinit var pdfRenderer: PdfRenderer
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val composeView = ComposeView(requireContext())
+        composeView.setContent {
+            val pages = remember { mutableStateOf(listOf<Bitmap>()) }
+            LaunchedEffect(Unit) {
+                // Initialize pdfRenderer here
+                val inputStream = requireContext().assets.open("lista.pdf")
+                val tempFile = File.createTempFile("tempPdf", ".pdf", requireContext().cacheDir).apply {
+                    outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                val fileDescriptor = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
+                pdfRenderer = PdfRenderer(fileDescriptor)
+                pages.value = showPages()
+            }
+            PdfPages(pages.value)
+        }
+        return composeView
     }
 
-    private fun showPages() {
-        val pageCount = pdfRenderer.pageCount
-        val displayMetrics = DisplayMetrics()
-        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val pageHeight = displayMetrics.heightPixels  // Adjust this if needed
+    private fun showPages(): List<Bitmap> {
+    val pageCount = pdfRenderer.pageCount
+    val displayMetrics = DisplayMetrics()
+    requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+    val screenWidth = displayMetrics.widthPixels
 
-        val layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            pageHeight
-        )
-
-        for (i in 0 until pageCount) {
-            val page = pdfRenderer.openPage(i)
-            val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-            page.close()
-
-            val imageView = GestureImageView(requireContext())
-            imageView.layoutParams = layoutParams
-            imageView.setImageBitmap(bitmap)
-
-            imageView.controller.settings
-                .setMaxZoom(10f)
-                .setDoubleTapZoom(-1f)
-                .setPanEnabled(true)
-                .setZoomEnabled(true)
-                .setDoubleTapEnabled(true)
-                .setRotationEnabled(false)
-                .setRestrictRotation(false)
-                .setOverscrollDistance(0f, 0f)
-                .setOverzoomFactor(2f)
-                .setFillViewport(false)
-                .setFitMethod(Settings.Fit.INSIDE)
-                .setGravity(Gravity.CENTER)
-
-            pagesLayout?.addView(imageView)
+    return List(pageCount) { i ->
+        val page = pdfRenderer.openPage(i)
+        val scaleFactor = screenWidth.toFloat() / page.width
+        val bitmapHeight = (page.height * scaleFactor).toInt()
+        val bitmap = Bitmap.createBitmap(screenWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+        page.close()
+        bitmap
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        try {
-            pdfRenderer.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        binding = null
     }
 }
