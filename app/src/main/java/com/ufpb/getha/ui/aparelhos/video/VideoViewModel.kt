@@ -6,13 +6,15 @@ import android.content.Context
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.annotation.OptIn
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
@@ -20,9 +22,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.SimpleExoPlayer
 import com.ufpb.getha.R
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.CircularProgressIndicator
 
 @Suppress("DEPRECATION")
 class VideoViewModel : ViewModel() {
@@ -58,7 +57,6 @@ fun VideoPlayer(
     modifier: Modifier = Modifier,
     viewModel: VideoViewModel,
     uri: String,
-    context: Context
 ) {
     AndroidView(
         modifier = modifier,
@@ -99,6 +97,5 @@ fun YourScreen(activity: ComponentActivity, viewModel: VideoViewModel) {
         modifier = Modifier.fillMaxSize(),
         viewModel = viewModel,
         uri = "android.resource://${activity.packageName}/${R.raw.aparelhosvideo}",
-        context = activity
     )
 }

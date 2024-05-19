@@ -8,6 +8,7 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
@@ -23,24 +24,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.IntSize
 import androidx.fragment.app.Fragment
 import java.io.File
+import kotlin.math.abs
 
 @Composable
 fun PdfPages(pages: List<Bitmap>) {
     val scale = remember { mutableFloatStateOf(1f) }
     val offsetX = remember { mutableFloatStateOf(0f) }
     val offsetY = remember { mutableFloatStateOf(0f) }
+    val imageSize = remember { mutableStateOf(IntSize.Zero) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .onGloballyPositioned { coordinates ->
+                imageSize.value = coordinates.size
+            }
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
                     scale.floatValue = (scale.floatValue * zoom).coerceIn(1f, 3f)
-                    offsetX.floatValue += pan.x
-                    offsetY.floatValue += pan.y
+                    val maxOffsetX = abs((imageSize.value.width * scale.floatValue - imageSize.value.width) / 2)
+                    val maxOffsetY = abs((imageSize.value.height * scale.floatValue - imageSize.value.height) / 2)
+                    offsetX.floatValue = (offsetX.floatValue + pan.x).coerceIn(-maxOffsetX, maxOffsetX)
+                    offsetY.floatValue = (offsetY.floatValue + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
                 }
             }
             .graphicsLayer(
@@ -57,6 +67,7 @@ fun PdfPages(pages: List<Bitmap>) {
         }
     }
 }
+
 @Composable
 fun PdfPageImage(bitmap: Bitmap) {
     Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
@@ -105,4 +116,15 @@ class ManualFragment : Fragment() {
         bitmap
         }
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+    }
+
 }
