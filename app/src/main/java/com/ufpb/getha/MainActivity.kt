@@ -22,8 +22,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding!!.appBarMain.toolbar)
         val drawer = binding!!.drawerLayout
         val navigationView = binding!!.navView
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = Builder(
             R.id.nav_home, R.id.nav_calculadora, R.id.nav_aparelhos
         )

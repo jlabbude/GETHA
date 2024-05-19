@@ -85,7 +85,6 @@ class ManualFragment : Fragment() {
         composeView.setContent {
             val pages = remember { mutableStateOf(listOf<Bitmap>()) }
             LaunchedEffect(Unit) {
-                // Initialize pdfRenderer here
                 val inputStream = requireContext().assets.open("lista.pdf")
                 val tempFile = File.createTempFile("tempPdf", ".pdf", requireContext().cacheDir).apply {
                     outputStream().use { outputStream ->
