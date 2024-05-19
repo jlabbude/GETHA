@@ -50,7 +50,6 @@ android {
 
 dependencies {
 
-    implementation(libs.gestureview)
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
