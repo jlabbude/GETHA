@@ -73,6 +73,7 @@ fun PdfPageImage(bitmap: Bitmap) {
     Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
 }
 
+@Suppress("DEPRECATION")
 class ManualFragment : Fragment() {
     private lateinit var pdfRenderer: PdfRenderer
 
