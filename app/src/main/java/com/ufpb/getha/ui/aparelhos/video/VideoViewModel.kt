@@ -3,6 +3,7 @@
 package com.ufpb.getha.ui.aparelhos.video
 
 import android.content.Context
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,6 +66,13 @@ fun VideoPlayer(
             androidx.media3.ui.PlayerView(context).apply {
                 viewModel.initializeExoPlayer(context, uri)
                 player = viewModel.exoPlayer.value
+
+                findViewById<View>(com.google.android.exoplayer2.ui.R.id.exo_rew)?.visibility = View.GONE
+                findViewById<View>(com.google.android.exoplayer2.ui.R.id.exo_ffwd)?.visibility = View.GONE
+                findViewById<View>(com.google.android.exoplayer2.ui.R.id.exo_prev)?.visibility = View.GONE
+                findViewById<View>(com.google.android.exoplayer2.ui.R.id.exo_next)?.visibility = View.GONE
+                findViewById<View>(com.google.android.exoplayer2.ui.R.id.exo_settings)?.visibility = View.GONE
+
             }
         },
         update = { view ->
