@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +40,9 @@ fun PdfPages(pages: List<Bitmap>) {
     val offsetY = remember { mutableFloatStateOf(0f) }
     val imageSize = remember { mutableStateOf(IntSize.Zero) }
 
+    val animatedOffsetX by animateFloatAsState(targetValue = offsetX.floatValue, label = "")
+    val animatedOffsetY by animateFloatAsState(targetValue = offsetY.floatValue, label = "")
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -56,8 +61,9 @@ fun PdfPages(pages: List<Bitmap>) {
             .graphicsLayer(
                 scaleX = scale.floatValue,
                 scaleY = scale.floatValue,
-                translationX = offsetX.floatValue,
-                translationY = offsetY.floatValue
+                // Use the animated values here
+                translationX = animatedOffsetX,
+                translationY = animatedOffsetY
             )
     ) {
         LazyColumn {
