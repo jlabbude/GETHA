@@ -11,7 +11,7 @@ import java.io.IOException
 class AparelhosViewModel : ViewModel() {
     private val mImageButton: MutableLiveData<Bitmap> = MutableLiveData()
 
-    fun getBitmap(context : Context): Bitmap{
+    fun getBitmap(context : Context): Bitmap {
 
         try{
             val assetManager = context.assets
@@ -22,7 +22,10 @@ class AparelhosViewModel : ViewModel() {
             e.printStackTrace()
         }
 
-        return mImageButton.value!!
+        val bitmap = if (mImageButton.value != null) mImageButton.value else {
+            BitmapFactory.decodeResource(context.resources, android.R.drawable.ic_menu_camera)
+        } // fallback shenanigans
+        return bitmap!!
     }
 
     val imageButton: LiveData<Bitmap>

@@ -61,7 +61,6 @@ fun PdfPages(pages: List<Bitmap>) {
             .graphicsLayer(
                 scaleX = scale.floatValue,
                 scaleY = scale.floatValue,
-                // Use the animated values here
                 translationX = animatedOffsetX,
                 translationY = animatedOffsetY
             )

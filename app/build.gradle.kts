@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.ufpb.getha"
-    compileSdk = 34
+    compileSdk = 35
 
     aaptOptions {
         noCompress("pdf")
@@ -20,7 +20,7 @@ android {
     defaultConfig {
         applicationId = "com.ufpb.getha"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
