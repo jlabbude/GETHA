@@ -17,7 +17,7 @@ class AparelhosViewModel : ViewModel() {
     suspend fun getBitmap(context : Context): Bitmap {
 
         try {
-            val byteArray = HttpClient(Android).get("http://192.168.15.11:8000/world").readBytes()
+            val byteArray = HttpClient(Android).get("http://192.168.15.11:8000/aparelhos_image").readBytes()
             mImageButton.value = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         } catch (e: ConnectException) {
             return BitmapFactory.decodeResource(context.resources, android.R.drawable.ic_menu_camera)

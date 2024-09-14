@@ -1,6 +1,8 @@
 package com.ufpb.getha.ui.aparelhos.manual
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -32,8 +34,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.IntSize
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.request.get
+import io.ktor.client.statement.readBytes
 import java.io.File
 import kotlin.math.abs
+
+object Id { var finalAparelhoId: Int = 0; }
 
 @Composable
 fun PdfPages(pages: List<Bitmap>) {
@@ -54,10 +62,14 @@ fun PdfPages(pages: List<Bitmap>) {
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
                     scale.floatValue = (scale.floatValue * zoom).coerceIn(1f, 3f)
-                    val maxOffsetX = abs((imageSize.value.width * scale.floatValue - imageSize.value.width) / 2)
-                    val maxOffsetY = abs((imageSize.value.height * scale.floatValue - imageSize.value.height) / 2)
-                    offsetX.floatValue = (offsetX.floatValue + pan.x).coerceIn(-maxOffsetX, maxOffsetX)
-                    offsetY.floatValue = (offsetY.floatValue + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                    val maxOffsetX =
+                        abs((imageSize.value.width * scale.floatValue - imageSize.value.width) / 2)
+                    val maxOffsetY =
+                        abs((imageSize.value.height * scale.floatValue - imageSize.value.height) / 2)
+                    offsetX.floatValue =
+                        (offsetX.floatValue + pan.x).coerceIn(-maxOffsetX, maxOffsetX)
+                    offsetY.floatValue =
+                        (offsetY.floatValue + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
                 }
             }
             .graphicsLayer(
@@ -82,8 +94,6 @@ fun PdfPageImage(bitmap: Bitmap) {
 
 @Suppress("DEPRECATION")
 class ManualFragment : Fragment() {
-    private lateinit var pdfRenderer: PdfRenderer
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -92,44 +102,62 @@ class ManualFragment : Fragment() {
         composeView.setContent {
             val pages = remember { mutableStateOf(listOf<Bitmap>()) }
             LaunchedEffect(Unit) {
-                val inputStream = requireContext().assets.open("lista.pdf")
-                val tempFile = File.createTempFile("tempPdf", ".pdf", requireContext().cacheDir).apply {
-                    outputStream().use { outputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
-                }
-                val fileDescriptor = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
-                pdfRenderer = PdfRenderer(fileDescriptor)
-                pages.value = showPages()
+                Log.w("Getha", "Item id is ${Id.finalAparelhoId}")
+                val byteArray = HttpClient(Android).get(
+                    "http://192.168.15.11:8000/manual?id=${Id.finalAparelhoId}"
+                ).readBytes()
+
+                pages.value = renderPdf(byteArray)
             }
             PdfPages(pages.value)
         }
         return composeView
     }
 
-    private fun showPages(): List<Bitmap> {
-        val pageCount = pdfRenderer.pageCount
+    private fun renderPdf(pdfData: ByteArray): List<Bitmap> {
+        val pages = mutableListOf<Bitmap>()
+        val parcelFileDescriptor = createParcelFileDescriptorFromBytes(pdfData)
+
+        val renderer = PdfRenderer(parcelFileDescriptor!!)
+
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels
 
-        return List(pageCount) { i ->
-            val page = pdfRenderer.openPage(i)
+        for (i in 0 until renderer.pageCount) {
+            val page = renderer.openPage(i)
             val scaleFactor = screenWidth.toFloat() / page.width
             val bitmapHeight = (page.height * scaleFactor).toInt()
             val bitmap = Bitmap.createBitmap(screenWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+
+            val canvas = Canvas(bitmap)
+            canvas.drawColor(Color.WHITE)
+            canvas.drawBitmap(bitmap, 0f, 0f, null)
+
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            pages.add(bitmap)
+
             page.close()
-            bitmap
         }
+
+        renderer.close()
+        parcelFileDescriptor.close()
+
+        return pages
+    }
+
+    private fun createParcelFileDescriptorFromBytes(byteArray: ByteArray): ParcelFileDescriptor? {
+        val tempFile = File(requireContext().cacheDir, "tempPdf.pdf")
+        tempFile.writeBytes(byteArray)
+        return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
         val args: ManualFragmentArgs by navArgs()
-        val itemId = args.aparelhoId
-        Log.w("Getha", "Item id is $itemId")
+        Id.finalAparelhoId = args.aparelhoId
+        Log.w("Getha", "Item id is ${Id.finalAparelhoId}")
     }
 
     override fun onDestroyView() {

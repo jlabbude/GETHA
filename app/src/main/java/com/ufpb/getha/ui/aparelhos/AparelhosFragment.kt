@@ -34,7 +34,7 @@ class AparelhosFragment : Fragment() {
         val imageList = HashMap<Bitmap, Int>()
         viewLifecycleOwner.lifecycleScope.launch {
             for (i in 1..5) {
-                imageList[aparelhosViewModel.getBitmap(requireContext())] = 1
+                imageList[aparelhosViewModel.getBitmap(requireContext())] = i
                 Log.i("Getha", "Added")
             }
             Log.w("Getha", "Size is $imageList.size.toString()")
