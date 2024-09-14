@@ -5,6 +5,7 @@ import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.IntSize
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import java.io.File
 import kotlin.math.abs
 
@@ -106,25 +108,28 @@ class ManualFragment : Fragment() {
     }
 
     private fun showPages(): List<Bitmap> {
-    val pageCount = pdfRenderer.pageCount
-    val displayMetrics = DisplayMetrics()
-    requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-    val screenWidth = displayMetrics.widthPixels
+        val pageCount = pdfRenderer.pageCount
+        val displayMetrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenWidth = displayMetrics.widthPixels
 
-    return List(pageCount) { i ->
-        val page = pdfRenderer.openPage(i)
-        val scaleFactor = screenWidth.toFloat() / page.width
-        val bitmapHeight = (page.height * scaleFactor).toInt()
-        val bitmap = Bitmap.createBitmap(screenWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
-        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-        page.close()
-        bitmap
+        return List(pageCount) { i ->
+            val page = pdfRenderer.openPage(i)
+            val scaleFactor = screenWidth.toFloat() / page.width
+            val bitmapHeight = (page.height * scaleFactor).toInt()
+            val bitmap = Bitmap.createBitmap(screenWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            page.close()
+            bitmap
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
+        val args: ManualFragmentArgs by navArgs()
+        val itemId = args.aparelhoId
+        Log.w("Getha", "Item id is $itemId")
     }
 
     override fun onDestroyView() {

@@ -34,7 +34,12 @@
         android:id="@+id/nav_manual"
         android:name="com.ufpb.getha.ui.aparelhos.manual.ManualFragment"
         android:label="Manual"
-        tools:layout="@layout/fragment_manual" />
+        tools:layout="@layout/fragment_manual">
+        <argument
+            android:name="aparelhoId"
+            app:argType="integer"
+            android:defaultValue="1"/>
+    </fragment>
 
     <fragment
         android:id="@+id/nav_video"

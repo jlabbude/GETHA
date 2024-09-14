@@ -1,15 +1,13 @@
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.android")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
     namespace = "com.ufpb.getha"
     compileSdk = 35
-
-    aaptOptions {
-        noCompress("pdf")
-    }
 
     buildFeatures {
         compose = true
@@ -36,27 +34,25 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
     buildFeatures {
         viewBinding = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    androidResources {
+        noCompress += listOf("pdf")
+    }
 }
 
 dependencies {
-
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation("androidx.core:core-ktx:+")
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation(libs.media3.ui)
     implementation(libs.media3.exoplayer)
     implementation(libs.lifecycle.viewmodel.compose)
@@ -71,4 +67,7 @@ dependencies {
     implementation(libs.foundation)
     implementation(libs.tooling)
     implementation(libs.compmaterial)
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-android:2.3.12")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
