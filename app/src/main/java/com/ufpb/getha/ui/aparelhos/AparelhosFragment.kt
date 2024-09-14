@@ -31,15 +31,15 @@ class AparelhosFragment : Fragment() {
         val root: View = binding!!.getRoot()
         val buttonContainer = root.findViewById<FlexboxLayout>(R.id.button_container)
 
-        val imageList = HashMap<Bitmap, Int>()
+        val imageLinkedMap = LinkedHashMap<Int, Bitmap>()
         viewLifecycleOwner.lifecycleScope.launch {
             for (i in 1..5) {
-                imageList[aparelhosViewModel.getBitmap(requireContext())] = i
+                imageLinkedMap[i] = aparelhosViewModel.getBitmap(requireContext())
                 Log.i("Getha", "Added")
             }
-            Log.w("Getha", "Size is $imageList.size.toString()")
+            Log.w("Getha", "Size is $imageLinkedMap.size.toString()")
 
-            imageList.forEach { image, id ->
+            imageLinkedMap.forEach { id, image ->
                 val imageButton = ImageButton(requireContext()).apply {
                     layoutParams = ViewGroup.LayoutParams(requireView().width/2, image.height)
                     setBackgroundColor(Color.parseColor("#E0E8E0"))
