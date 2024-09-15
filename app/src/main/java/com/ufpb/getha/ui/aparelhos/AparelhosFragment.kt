@@ -53,13 +53,15 @@ class AparelhosFragment : Fragment() {
                         findNavController(requireActivity(), R.id.nav_host_fragment_content_main)
                     navController.setGraph(R.navigation.mobile_navigation)
                     popup.setOnMenuItemClickListener { item: MenuItem ->
-                        if (item.itemId == R.id.action_manual) {
-                            navController.navigate(AparelhosFragmentDirections.actionManual(id))
-                            return@setOnMenuItemClickListener true
-                        }
-                        else if (item.itemId == R.id.action_video) {
-                            navController.navigate(AparelhosFragmentDirections.actionVideo(id))
-                            return@setOnMenuItemClickListener true
+                        when (item.itemId) {
+                            R.id.action_manual -> {
+                                navController.navigate(AparelhosFragmentDirections.actionManual(id))
+                                return@setOnMenuItemClickListener true
+                            }
+                            R.id.action_video -> {
+                                navController.navigate(AparelhosFragmentDirections.actionVideo(id))
+                                return@setOnMenuItemClickListener true
+                            }
                         }
                         false
                     }
