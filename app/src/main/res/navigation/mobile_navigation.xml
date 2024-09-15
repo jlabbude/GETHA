@@ -45,6 +45,11 @@
         android:id="@+id/nav_video"
         android:name="com.ufpb.getha.ui.aparelhos.video.VideoFragment"
         android:label="Video"
-        tools:layout="@layout/fragment_video" />
+        tools:layout="@layout/fragment_video">
+        <argument
+            android:name="aparelhoId"
+            app:argType="integer"
+            android:defaultValue="1"/>
+    </fragment>
 
 </navigation>

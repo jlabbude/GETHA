@@ -1,20 +1,21 @@
 package com.ufpb.getha.ui.aparelhos.video
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
+
+object Id { var aparelhoId: Int = 0; }
 
 @Composable
-fun VideoScreen(viewModel: VideoViewModel, activity: ComponentActivity) {
-    YourScreen(activity = activity, viewModel = viewModel)
+fun VideoScreen(viewModel: VideoViewModel) {
+    YourScreen(viewModel = viewModel)
 }
 
 class VideoFragment : Fragment() {
@@ -27,7 +28,7 @@ class VideoFragment : Fragment() {
     ): View {
         val composeView = ComposeView(requireContext())
         composeView.setContent {
-            VideoScreen(viewModel = viewModel, activity = requireActivity())
+            VideoScreen(viewModel = viewModel)
         }
         return composeView
     }
@@ -35,6 +36,8 @@ class VideoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
+        val args: VideoFragmentArgs by navArgs()
+        Id.aparelhoId = args.aparelhoId
     }
 
     override fun onDestroyView() {

@@ -58,7 +58,7 @@ class AparelhosFragment : Fragment() {
                             return@setOnMenuItemClickListener true
                         }
                         else if (item.itemId == R.id.action_video) {
-                            navController.navigate(R.id.nav_video)
+                            navController.navigate(AparelhosFragmentDirections.actionVideo(id))
                             return@setOnMenuItemClickListener true
                         }
                         false

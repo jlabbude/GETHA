@@ -41,7 +41,7 @@ import io.ktor.client.statement.readBytes
 import java.io.File
 import kotlin.math.abs
 
-object Id { var finalAparelhoId: Int = 0; }
+object Id { var aparelhoId: Int = 0; }
 
 @Composable
 fun PdfPages(pages: List<Bitmap>) {
@@ -102,9 +102,9 @@ class ManualFragment : Fragment() {
         composeView.setContent {
             val pages = remember { mutableStateOf(listOf<Bitmap>()) }
             LaunchedEffect(Unit) {
-                Log.w("Getha", "Item id is ${Id.finalAparelhoId}")
+                Log.w("Getha", "Item id is ${Id.aparelhoId}")
                 val byteArray = HttpClient(Android).get(
-                    "http://192.168.15.11:8000/manual?id=${Id.finalAparelhoId}"
+                    "http://192.168.15.11:8000/manual?id=${Id.aparelhoId}"
                 ).readBytes()
 
                 pages.value = renderPdf(byteArray)
@@ -156,8 +156,8 @@ class ManualFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
         val args: ManualFragmentArgs by navArgs()
-        Id.finalAparelhoId = args.aparelhoId
-        Log.w("Getha", "Item id is ${Id.finalAparelhoId}")
+        Id.aparelhoId = args.aparelhoId
+        Log.w("Getha", "Item id is ${Id.aparelhoId}")
     }
 
     override fun onDestroyView() {

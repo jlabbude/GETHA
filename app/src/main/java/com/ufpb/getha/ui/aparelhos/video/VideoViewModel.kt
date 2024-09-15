@@ -4,7 +4,6 @@ package com.ufpb.getha.ui.aparelhos.video
 
 import android.content.Context
 import android.view.View
-import androidx.activity.ComponentActivity
 import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +20,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.SimpleExoPlayer
-import com.ufpb.getha.R
 
 @Suppress("DEPRECATION")
 class VideoViewModel : ViewModel() {
@@ -92,10 +90,10 @@ fun VideoPlayer(
 }
 
 @Composable
-fun YourScreen(activity: ComponentActivity, viewModel: VideoViewModel) {
+fun YourScreen(viewModel: VideoViewModel) {
     VideoPlayer(
         modifier = Modifier.fillMaxSize(),
         viewModel = viewModel,
-        uri = "android.resource://${activity.packageName}/${R.raw.aparelhosvideo}",
+        uri = "http://192.168.15.11:8000/video?id=${Id.aparelhoId}",
     )
 }
