@@ -42,48 +42,41 @@ class AparelhosFragment : Fragment() {
                 try {
                     imageLinkedMap[i] = aparelhosViewModel.getBitmap(requireContext())
                 } catch (_: HttpRequestTimeoutException) {
-                    break
+                    val composeView = ComposeView(requireContext())
+                    composeView.setContent { ServidorErrorPopup(navController) }
+                    buttonContainer.addView(composeView)
                 }
                 Log.i("Getha", "Added")
             }
             Log.w("Getha", "Size is $imageLinkedMap")
             progressBar.visibility = View.GONE
-
-            if (imageLinkedMap.isEmpty) {
-                val composeView = ComposeView(requireContext())
-                composeView.setContent {
-                    ServidorErrorPopup(navController)
+            imageLinkedMap.forEach { id, image ->
+                Log.w("Getha", "Image is $image $id")
+                val imageButton = ImageButton(requireContext()).apply {
+                    layoutParams = ViewGroup.LayoutParams(requireView().width/2, image.height)
+                    setBackgroundColor(Color.parseColor("#E0E8E0"))
+                    setImageBitmap(image)
                 }
-                buttonContainer.addView(composeView)
-            } else {
-                imageLinkedMap.forEach { id, image ->
-                    Log.w("Getha", "Image is $image $id")
-                    val imageButton = ImageButton(requireContext()).apply {
-                        layoutParams = ViewGroup.LayoutParams(requireView().width/2, image.height)
-                        setBackgroundColor(Color.parseColor("#E0E8E0"))
-                        setImageBitmap(image)
-                    }
-                    imageButton.setOnClickListener { v: View? ->
-                        val popup = PopupMenu(context, v)
-                        popup.menuInflater.inflate(R.menu.popupmenu_aparelhos, popup.menu)
-                        popup.show()
-                        navController.setGraph(R.navigation.mobile_navigation)
-                        popup.setOnMenuItemClickListener { item: MenuItem ->
-                            when (item.itemId) {
-                                R.id.action_manual -> {
-                                    navController.navigate(AparelhosFragmentDirections.actionManual(id))
-                                    return@setOnMenuItemClickListener true
-                                }
-                                R.id.action_video -> {
-                                    navController.navigate(AparelhosFragmentDirections.actionVideo(id))
-                                    return@setOnMenuItemClickListener true
-                                }
+                imageButton.setOnClickListener { v: View? ->
+                    val popup = PopupMenu(context, v)
+                    popup.menuInflater.inflate(R.menu.popupmenu_aparelhos, popup.menu)
+                    popup.show()
+                    navController.setGraph(R.navigation.mobile_navigation)
+                    popup.setOnMenuItemClickListener { item: MenuItem ->
+                        when (item.itemId) {
+                            R.id.action_manual -> {
+                                navController.navigate(AparelhosFragmentDirections.actionManual(id))
+                                return@setOnMenuItemClickListener true
                             }
-                            false
+                            R.id.action_video -> {
+                                navController.navigate(AparelhosFragmentDirections.actionVideo(id))
+                                return@setOnMenuItemClickListener true
+                            }
                         }
+                        false
                     }
-                    buttonContainer.addView(imageButton)
                 }
+                buttonContainer.addView(imageButton)
             }
         }
         return root

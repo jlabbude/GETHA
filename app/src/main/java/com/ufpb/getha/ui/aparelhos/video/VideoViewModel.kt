@@ -14,6 +14,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
@@ -78,7 +79,9 @@ fun VideoPlayer(
 
     if (viewModel.isBuffering.value) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = colorResource(id = com.ufpb.getha.R.color.green_main),
+            )
         }
     }
 

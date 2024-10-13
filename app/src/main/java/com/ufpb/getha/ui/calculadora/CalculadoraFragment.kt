@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.Composable
 import androidx.fragment.app.Fragment
 import com.ufpb.getha.databinding.FragmentCalculadoraBinding
 
@@ -23,4 +24,9 @@ class CalculadoraFragment : Fragment() {
         super.onDestroyView()
         binding = null
     }
+}
+
+@Composable
+fun CalculadoraSlot(value: Float) {
+
 }
