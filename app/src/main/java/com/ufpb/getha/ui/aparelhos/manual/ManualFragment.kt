@@ -106,7 +106,7 @@ class ManualFragment : Fragment() {
             LaunchedEffect(Unit) {
                 Log.w("Getha", "Item id is ${Id.aparelhoId}")
                 val byteArray = HttpClient(Android).get(
-                    "http://192.168.15.11:8000/manual?id=${Id.aparelhoId}"
+                    "http://192.168.15.9:8000/manual?id=${Id.aparelhoId}"
                 ).readBytes()
 
                 pages.value = renderPdf(byteArray)

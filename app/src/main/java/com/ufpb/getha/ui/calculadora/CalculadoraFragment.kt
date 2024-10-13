@@ -1,4 +1,4 @@
-package com.ufpb.getha.ui.gallery
+package com.ufpb.getha.ui.calculadora
 
 import android.os.Bundle
 import android.view.LayoutInflater

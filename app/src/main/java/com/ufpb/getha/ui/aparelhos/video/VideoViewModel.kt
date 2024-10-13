@@ -94,6 +94,6 @@ fun YourScreen(viewModel: VideoViewModel) {
     VideoPlayer(
         modifier = Modifier.fillMaxSize(),
         viewModel = viewModel,
-        uri = "http://192.168.15.11:8000/video?id=${Id.aparelhoId}",
+        uri = "http://192.168.15.9:8000/video?id=${Id.aparelhoId}",
     )
 }

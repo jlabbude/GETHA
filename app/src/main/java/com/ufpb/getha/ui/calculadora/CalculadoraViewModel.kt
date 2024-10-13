@@ -1,4 +1,4 @@
-package com.ufpb.getha.ui.gallery
+package com.ufpb.getha.ui.calculadora
 
 import androidx.lifecycle.ViewModel
 
