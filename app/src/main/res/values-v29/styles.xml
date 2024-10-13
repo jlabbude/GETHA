@@ -4,6 +4,10 @@
     <style name="Theme.GethaApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <!-- Force light mode -->
+        <item name="colorPrimary">@color/green_main</item>
+        <item name="colorPrimaryDark">@color/green_main</item>
+        <item name="colorAccent">@color/green_500</item>
+        <item name="android:statusBarColor">@color/green_700</item>
         <item name="android:forceDarkAllowed">false</item>
     </style>
 </resources>

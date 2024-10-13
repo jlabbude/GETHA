@@ -43,8 +43,10 @@ import kotlin.math.abs
 
 object Id { var aparelhoId: Int = 0; }
 
+
 @Composable
 fun PdfPages(pages: List<Bitmap>) {
+
     val scale = remember { mutableFloatStateOf(1f) }
     val offsetX = remember { mutableFloatStateOf(0f) }
     val offsetY = remember { mutableFloatStateOf(0f) }

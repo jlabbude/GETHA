@@ -1,5 +1,6 @@
 package com.ufpb.getha.ui.home
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,13 +16,14 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding!!.getRoot()
-        val textView = binding!!.textHome
-        homeViewModel.text.observe(getViewLifecycleOwner()) { text: CharSequence? ->
-            textView.text = text
-        }
+        val imageView = binding!!.imageView
+        val assetManager = requireContext().assets
+        val inputStream = assetManager.open("logo.png")
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        imageView.setImageBitmap(bitmap)
+
         return root
     }
 

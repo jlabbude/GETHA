@@ -1,3 +1,5 @@
+package com.ufpb.getha.ui.gallery
+
 import kotlin.system.exitProcess
 
 sealed class Variavel {
@@ -17,12 +19,14 @@ data class Conta (
 )
 
 fun main() {
-    val conta = conta(Conta(
+    val conta = conta(
+        Conta(
         c1 = Variavel.Definida(10.0),
         v1 = Variavel.Indefinida,
         c2 = Variavel.Definida(1.0),
         v2 = Variavel.Definida(250.0),
-    ))
+    )
+    )
 
     if (conta == null) exitProcess(1)
 
