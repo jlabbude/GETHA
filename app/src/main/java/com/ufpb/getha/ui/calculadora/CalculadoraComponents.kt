@@ -1,0 +1,205 @@
+package com.ufpb.getha.ui.calculadora
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Button
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.ButtonDefaults
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Checkbox
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.OutlinedTextField
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.SnackbarHost
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+
+data class SlotState(
+    var input: String = "",
+    var checked: Boolean = false,
+    var label: String
+)
+
+@Composable
+fun CalculadoraSlot() {
+
+    val slotC1 = remember { mutableStateOf(SlotState(label = "Incógnita", checked = true)) }
+    val slotV1 = remember { mutableStateOf(SlotState(label = "V1")) }
+    val slotC2 = remember { mutableStateOf(SlotState(label = "C2")) }
+    val slotV2 = remember { mutableStateOf(SlotState(label = "V2")) }
+
+    var valorCalculado by remember { mutableDoubleStateOf(0.0) }
+
+    val green500 = colorResource(id = com.ufpb.getha.R.color.green_500)
+    val green700 = colorResource(id = com.ufpb.getha.R.color.green_700)
+    val focusManager = LocalFocusManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    @Composable
+    fun SlotRow(
+        slotState: MutableState<SlotState>,
+        onCheckedChange: (Boolean) -> Unit,
+        enabled: Boolean
+    ) {
+        Row {
+            Checkbox(
+                checked = slotState.value.checked,
+                onCheckedChange = {
+                    onCheckedChange(it)
+                },
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            OutlinedTextField(
+                value = slotState.value.input,
+                onValueChange = { slotState.value = slotState.value.copy(input = it.replace(',', '.')) },
+                label = { Text(slotState.value.label, modifier = Modifier.alpha(0.5f)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.padding(end = 8.dp),
+                enabled = enabled
+            )
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        SlotRow(
+            slotState = slotC1,
+            onCheckedChange = { checked ->
+                if (checked) {
+                    slotC1.value = slotC1.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotV1.value = slotV1.value.copy(label = "V1", checked = false)
+                    slotC2.value = slotC2.value.copy(label = "C2", checked = false)
+                    slotV2.value = slotV2.value.copy(label = "V2", checked = false)
+                }
+            },
+            enabled = !slotC1.value.checked
+        )
+
+        SlotRow(
+            slotState = slotV1,
+            onCheckedChange = { checked ->
+                if (checked) {
+                    slotC1.value = slotC1.value.copy(label = "C1", checked = false)
+                    slotV1.value = slotV1.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotC2.value = slotC2.value.copy(label = "C2", checked = false)
+                    slotV2.value = slotV2.value.copy(label = "V2", checked = false)
+                }
+            },
+            enabled = !slotV1.value.checked
+        )
+
+        SlotRow(
+            slotState = slotC2,
+            onCheckedChange = { checked ->
+                if (checked) {
+                    slotC1.value = slotC1.value.copy(label = "C1", checked = false)
+                    slotV1.value = slotV1.value.copy(label = "V1", checked = false)
+                    slotC2.value = slotC2.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotV2.value = slotV2.value.copy(label = "V2", checked = false)
+                }
+            },
+            enabled = !slotC2.value.checked
+        )
+
+        SlotRow(
+            slotState = slotV2,
+            onCheckedChange = { checked ->
+                if (checked) {
+                    slotC1.value = slotC1.value.copy(label = "C1", checked = false)
+                    slotV1.value = slotV1.value.copy(label = "V1", checked = false)
+                    slotC2.value = slotC2.value.copy(label = "C2", checked = false)
+                    slotV2.value = slotV2.value.copy(label = "Incógnita", input = "", checked = true)
+                }
+            },
+            enabled = !slotV2.value.checked
+        )
+
+        Button(
+            onClick = {
+                if ((slotC1.value.input.isEmpty() && !slotC1.value.checked) ||
+                    (slotV1.value.input.isEmpty() && !slotV1.value.checked) ||
+                    (slotC2.value.input.isEmpty() && !slotC2.value.checked) ||
+                    (slotV2.value.input.isEmpty() && !slotV2.value.checked)
+                ) {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Preencha todos os campos!")
+                    }
+                } else {
+                    try {
+                        valorCalculado = conta(
+                            Conta(
+                                if (slotC1.value.checked) Variavel.Indefinida else Variavel.Definida(slotC1.value.input.toDouble()),
+                                if (slotV1.value.checked) Variavel.Indefinida else Variavel.Definida(slotV1.value.input.toDouble()),
+                                if (slotC2.value.checked) Variavel.Indefinida else Variavel.Definida(slotC2.value.input.toDouble()),
+                                if (slotV2.value.checked) Variavel.Indefinida else Variavel.Definida(slotV2.value.input.toDouble())
+                            )
+                        )!!
+                    } catch (_: NumberFormatException) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Insira um número válido!")
+                        }
+                    }
+                }
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 64.dp)
+                .width(200.dp)
+                .height(60.dp),
+            border = BorderStroke(4.dp, green500),
+            colors = ButtonDefaults.buttonColors(backgroundColor = green500)
+        ) {
+            Text("Calcular", color = Color.White)
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Text(
+            text = "$valorCalculado",
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 100.dp),
+            color = green700,
+            fontSize = 24.sp
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
+    }
+}
