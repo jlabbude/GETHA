@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
-import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.*
 import io.ktor.client.statement.readBytes
@@ -23,20 +22,14 @@ class AparelhosViewModel : ViewModel() {
     }
 
     suspend fun getBitmap(context: Context): Bitmap {
-        return try {
-            val byteArray = client.get("http://192.168.15.9:8000/aparelhos_image").readBytes()
-            val decode = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-            val bitmap = if ( decode == null) {
-                BitmapFactory.decodeResource(context.resources, android.R.drawable.ic_menu_camera)
-            } else {
-                decode
-            }
-            mImageButton.value = bitmap!!
-            bitmap
-        } catch (e: HttpRequestTimeoutException) {
-            throw e
-        } catch (_: Exception) {
+        val byteArray = client.get("http://192.168.15.9:8000/aparelhos_image").readBytes()
+        val decode = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        val bitmap = if ( decode == null) {
             BitmapFactory.decodeResource(context.resources, android.R.drawable.ic_menu_camera)
+        } else {
+            decode
         }
+        mImageButton.value = bitmap!!
+        return bitmap
     }
 }

@@ -51,9 +51,9 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
+    implementation(libs.media3.ui)
     implementation(libs.navigation.ui)
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation(libs.media3.ui)
     implementation(libs.media3.exoplayer)
     implementation(libs.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
@@ -70,4 +70,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:2.3.12")
     implementation("io.ktor:ktor-client-android:2.3.12")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("androidx.compose.material3:material3:1.3.0")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha01")
 }

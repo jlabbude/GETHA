@@ -1,7 +1,5 @@
 package com.ufpb.getha.ui.calculadora
 
-import kotlin.system.exitProcess
-
 sealed class Variavel {
     data class Definida(val v: Double): Variavel() {
         fun getVal(): Double {
@@ -17,21 +15,6 @@ data class Conta (
     val c2: Variavel,
     val v2: Variavel,
 )
-
-fun main() {
-    val conta = conta(
-        Conta(
-        c1 = Variavel.Definida(10.0),
-        v1 = Variavel.Indefinida,
-        c2 = Variavel.Definida(1.0),
-        v2 = Variavel.Definida(250.0),
-    )
-    )
-
-    if (conta == null) exitProcess(1)
-
-    println("-------\n\n $conta \n\n--------t")
-}
 
 fun conta(conta: Conta): Double? {
     if (conta.c1 is Variavel.Indefinida) {

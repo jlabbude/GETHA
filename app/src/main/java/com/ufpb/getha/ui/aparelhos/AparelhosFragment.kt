@@ -21,6 +21,8 @@ import com.ufpb.getha.utils.ServidorErrorPopup
 import com.ufpb.getha.databinding.FragmentAparelhosBinding
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import kotlin.math.abs
 
 class AparelhosFragment : Fragment() {
     private var binding: FragmentAparelhosBinding? = null
@@ -41,10 +43,15 @@ class AparelhosFragment : Fragment() {
             for (i in 1..5) {
                 try {
                     imageLinkedMap[i] = aparelhosViewModel.getBitmap(requireContext())
-                } catch (_: HttpRequestTimeoutException) {
-                    val composeView = ComposeView(requireContext())
-                    composeView.setContent { ServidorErrorPopup(navController) }
-                    buttonContainer.addView(composeView)
+                } catch (ex: Exception ) {
+                    when (ex) {
+                        is HttpRequestTimeoutException, is ConnectException -> {
+                            val composeView = ComposeView(requireContext())
+                            composeView.setContent { ServidorErrorPopup(navController) }
+                            buttonContainer.addView(composeView)
+                            break
+                        } else -> throw ex
+                    }
                 }
                 Log.i("Getha", "Added")
             }
@@ -53,9 +60,13 @@ class AparelhosFragment : Fragment() {
             imageLinkedMap.forEach { id, image ->
                 Log.w("Getha", "Image is $image $id")
                 val imageButton = ImageButton(requireContext()).apply {
-                    layoutParams = ViewGroup.LayoutParams(requireView().width/2, image.height)
-                    setBackgroundColor(Color.parseColor("#E0E8E0"))
-                    setImageBitmap(image)
+                    val width = requireView().width / 2
+                    val diff = abs(image.width - width)
+                    val height = image.height + diff
+                    val scaledBitmap = Bitmap.createScaledBitmap(image, width, height, true)
+                    layoutParams = ViewGroup.LayoutParams(width, height)
+                    setBackgroundColor(Color.parseColor("#FFFFFF"))
+                    setImageBitmap(scaledBitmap)
                 }
                 imageButton.setOnClickListener { v: View? ->
                     val popup = PopupMenu(context, v)
