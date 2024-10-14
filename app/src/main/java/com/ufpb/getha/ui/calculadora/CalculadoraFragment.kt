@@ -20,6 +20,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import com.ufpb.getha.databinding.FragmentCalculadoraBinding
+import kotlinx.coroutines.launch
 
 class CalculadoraFragment : Fragment() {
     private var binding: FragmentCalculadoraBinding? = null
@@ -82,6 +85,9 @@ fun CalculadoraSlot() {
 
     val focus = LocalFocusManager.current
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(top = 16.dp),
@@ -92,7 +98,7 @@ fun CalculadoraSlot() {
                 onCheckedChange = {
                     when (it) {
                         true -> {
-                            checkedC1 = it; textC1 = "Incógnita"
+                            checkedC1 = it; textC1 = "Incógnita"; inputC1 = ""
                             checkedV1 = false; textV1 = "V1"
                             checkedC2 = false; textC2 = "C2"
                             checkedV2 = false; textV2 = "V2"
@@ -104,10 +110,11 @@ fun CalculadoraSlot() {
             )
             OutlinedTextField(
                 value = inputC1,
-                onValueChange = { inputC1 = it.toDouble().toString() },
+                onValueChange = { inputC1 = it.replace(',', '.') },
                 label = { Text(textC1, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp),
+                enabled = !checkedC1,
             )
         }
 
@@ -118,7 +125,7 @@ fun CalculadoraSlot() {
                     when (it) {
                         true -> {
                             checkedC1 = false; textC1 = "C1"
-                            checkedV1 = it; textV1 = "Incógnita"
+                            checkedV1 = it; textV1 = "Incógnita"; inputV1 = ""
                             checkedC2 = false; textC2 = "C2"
                             checkedV2 = false; textV2 = "V2"
                         }
@@ -129,10 +136,11 @@ fun CalculadoraSlot() {
             )
             OutlinedTextField(
                 value = inputV1,
-                onValueChange = { inputV1 = it.toDouble().toString() },
+                onValueChange = { inputV1 = it.replace(',', '.') },
                 label = { Text(textV1, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp),
+                enabled = !checkedV1,
             )
         }
 
@@ -144,7 +152,7 @@ fun CalculadoraSlot() {
                         true -> {
                             checkedC1 = false; textC1 = "C1"
                             checkedV1 = false; textV1 = "V1"
-                            checkedC2 = it; textC2 = "Incógnita"
+                            checkedC2 = it; textC2 = "Incógnita"; inputC2 = ""
                             checkedV2 = false; textV2 = "V2"
                         }
                         false -> {}
@@ -154,10 +162,11 @@ fun CalculadoraSlot() {
             )
             OutlinedTextField(
                 value = inputC2,
-                onValueChange = { inputC2 = it.toDouble().toString() },
+                onValueChange = { inputC2 = it.replace(',', '.') },
                 label = { Text(textC2, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp),
+                enabled = !checkedC2,
             )
         }
 
@@ -170,7 +179,7 @@ fun CalculadoraSlot() {
                             checkedC1 = false; textC1 = "C1"
                             checkedV1 = false; textV1 = "V1"
                             checkedC2 = false; textC2 = "C2"
-                            checkedV2 = it; textV2 = "Incógnita"
+                            checkedV2 = it; textV2 = "Incógnita"; inputV2 = ""
                         }
                         false -> {}
                     }
@@ -179,10 +188,11 @@ fun CalculadoraSlot() {
             )
             OutlinedTextField(
                 value = inputV2,
-                onValueChange = { inputV2 = it.toDouble().toString() },
+                onValueChange = { inputV2 = it.replace(',', '.') },
                 label = { Text(textV2, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp),
+                enabled = !checkedV2,
             )
         }
         Button(
@@ -192,14 +202,30 @@ fun CalculadoraSlot() {
                 .width(200.dp)
                 .height(60.dp),
             onClick = {
-                valorCalculado = conta(
-                    Conta(
-                        if (checkedC1) Variavel.Indefinida else Variavel.Definida(inputC1.toDouble()),
-                        if (checkedV1) Variavel.Indefinida else Variavel.Definida(inputV1.toDouble()),
-                        if (checkedC2) Variavel.Indefinida else Variavel.Definida(inputC2.toDouble()),
-                        if (checkedV2) Variavel.Indefinida else Variavel.Definida(inputV2.toDouble())
-                    )
-                )!!
+                if ((inputC1.isEmpty() && !checkedC1)
+                    || (inputV1.isEmpty() && !checkedV1)
+                    || (inputC2.isEmpty() && !checkedC2)
+                    || (inputV2.isEmpty() && !checkedV2))
+                {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Preencha todos os campos!")
+                    }
+                } else {
+                    try {
+                        valorCalculado = conta(
+                            Conta(
+                                if (checkedC1) Variavel.Indefinida else Variavel.Definida(inputC1.toDouble()),
+                                if (checkedV1) Variavel.Indefinida else Variavel.Definida(inputV1.toDouble()),
+                                if (checkedC2) Variavel.Indefinida else Variavel.Definida(inputC2.toDouble()),
+                                if (checkedV2) Variavel.Indefinida else Variavel.Definida(inputV2.toDouble())
+                            )
+                        )!!
+                    } catch (_: NumberFormatException){
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Insira um número válido!")
+                        }
+                    }
+                }
                 focus.clearFocus()
             },
             border = BorderStroke(4.dp,
@@ -222,6 +248,12 @@ fun CalculadoraSlot() {
                 .padding(bottom = 100.dp),
             color = colorResource(id = com.ufpb.getha.R.color.green_700),
             fontSize = 24.sp,
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
         )
     }
 }
