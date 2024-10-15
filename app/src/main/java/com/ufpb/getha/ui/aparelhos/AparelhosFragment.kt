@@ -1,101 +1,130 @@
 package com.ufpb.getha.ui.aparelhos
 
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation.findNavController
-import com.google.android.flexbox.FlexboxLayout
-import com.ufpb.getha.R
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
-import com.ufpb.getha.databinding.FragmentAparelhosBinding
-import io.ktor.client.plugins.HttpRequestTimeoutException
-import kotlinx.coroutines.launch
-import java.net.ConnectException
-import kotlin.math.abs
 
-class AparelhosFragment : Fragment() {
-    private var binding: FragmentAparelhosBinding? = null
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val aparelhosViewModel = ViewModelProvider(this)[AparelhosViewModel::class.java]
-        binding = FragmentAparelhosBinding.inflate(inflater, container, false)
-        val root: View = binding!!.getRoot()
-        val buttonContainer = root.findViewById<FlexboxLayout>(R.id.button_container)
-        val navController = findNavController(requireActivity(), R.id.nav_host_fragment_content_main)
-        val imageLinkedMap = LinkedHashMap<Int, Bitmap>()
-        val progressBar = root.findViewById<View>(R.id.progressBar)
-        progressBar.visibility = View.VISIBLE
-        viewLifecycleOwner.lifecycleScope.launch {
-            for (i in 1..5) {
-                try {
-                    imageLinkedMap[i] = aparelhosViewModel.getBitmap(requireContext())
-                } catch (ex: Exception ) {
-                    when (ex) {
-                        is HttpRequestTimeoutException, is ConnectException -> {
-                            val composeView = ComposeView(requireContext())
-                            composeView.setContent { ServidorErrorPopup(navController) }
-                            buttonContainer.addView(composeView)
-                            break
-                        } else -> throw ex
-                    }
-                }
-                Log.i("Getha", "Added")
-            }
-            Log.w("Getha", "Size is $imageLinkedMap")
-            progressBar.visibility = View.GONE
-            imageLinkedMap.forEach { id, image ->
-                Log.w("Getha", "Image is $image $id")
-                val imageButton = ImageButton(requireContext()).apply {
-                    val width = requireView().width / 2
-                    val diff = abs(image.width - width)
-                    val height = image.height + diff
-                    val scaledBitmap = Bitmap.createScaledBitmap(image, width, height, true)
-                    layoutParams = ViewGroup.LayoutParams(width, height)
-                    setBackgroundColor(Color.parseColor("#FFFFFF"))
-                    setImageBitmap(scaledBitmap)
-                }
-                imageButton.setOnClickListener { v: View? ->
-                    val popup = PopupMenu(context, v)
-                    popup.menuInflater.inflate(R.menu.popupmenu_aparelhos, popup.menu)
-                    popup.show()
-                    navController.setGraph(R.navigation.mobile_navigation)
-                    popup.setOnMenuItemClickListener { item: MenuItem ->
-                        when (item.itemId) {
-                            R.id.action_manual -> {
-                                navController.navigate(AparelhosFragmentDirections.actionManual(id))
-                                return@setOnMenuItemClickListener true
-                            }
-                            R.id.action_video -> {
-                                navController.navigate(AparelhosFragmentDirections.actionVideo(id))
-                                return@setOnMenuItemClickListener true
-                            }
+@Composable
+fun AparelhosScreen(
+    viewModel: AparelhosViewModel = viewModel(),
+    navController: NavController
+) {
+    val isLoading = viewModel.isLoading.collectAsState().value
+    val imageList = viewModel.imageList.collectAsState().value
+
+    MyTopBarApp {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .background(Color.White),
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = colorResource(
+                        id = com.ufpb.getha.R.color.green_main
+                    ),
+                    modifier = Modifier.align(
+                        androidx.compose.ui.Alignment.Center
+                    )
+                )
+            } else {
+                if (imageList.isEmpty()) {
+                    ServidorErrorPopup(navController)
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(150.dp),
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        items(imageList.size) { index ->
+                            val bitmap = imageList[index]
+                            ImageButton(bitmap, index + 1, navController)
                         }
-                        false
                     }
                 }
-                buttonContainer.addView(imageButton)
             }
         }
-        return root
     }
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
+@Composable
+fun ImageButton(bitmap: Bitmap, id: Int, navController: NavController) {
+    var expanded = remember { mutableStateOf(false) }
+
+    var lighterDarkGray = Color(0xFF666666)
+
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .background(Color.White)
+            .clickable { expanded.value = true }
+            .aspectRatio(1f)
+    ) {
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Show dropdown menu
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false })
+        {
+            DropdownMenuItem(
+                text = { Text("Manual", color = lighterDarkGray) },
+                onClick = {
+                    navController.navigate(AparelhosFragmentDirections.actionManual(id))
+                    expanded.value = false
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = com.ufpb.getha.R.drawable.baseline_chrome_reader_mode_24),
+                        contentDescription = null
+                    )
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Vídeo", color = lighterDarkGray) },
+                onClick = {
+                    navController.navigate(AparelhosFragmentDirections.actionVideo(id))
+                    expanded.value = false
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = com.ufpb.getha.R.drawable.video),
+                        contentDescription = null
+                    )
+                }
+            )
+        }
     }
-
 }

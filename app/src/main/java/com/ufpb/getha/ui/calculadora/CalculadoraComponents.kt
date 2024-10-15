@@ -51,6 +51,7 @@ fun CalculadoraSlot() {
     var valorDisplay by remember { mutableStateOf("") }
 
     val green700 = colorResource(id = com.ufpb.getha.R.color.green_700)
+    val greenMain = colorResource(id = com.ufpb.getha.R.color.green_main)
     val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -191,8 +192,8 @@ fun CalculadoraSlot() {
                 .padding(top = 64.dp)
                 .width(200.dp)
                 .height(60.dp),
-            border = BorderStroke(4.dp, green700),
-            colors = ButtonDefaults.buttonColors(containerColor = green700)
+            border = BorderStroke(4.dp, greenMain),
+            colors = ButtonDefaults.buttonColors(containerColor = greenMain)
         ) {
             Text("Calcular", color = Color.White)
         }

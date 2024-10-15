@@ -2,43 +2,37 @@
 
 package com.ufpb.getha.ui.calculadora
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.fragment.app.Fragment
-import com.ufpb.getha.databinding.FragmentCalculadoraBinding
+import com.ufpb.getha.utils.MyTopBarApp
 
-class CalculadoraFragment : Fragment() {
-    private var binding: FragmentCalculadoraBinding? = null
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentCalculadoraBinding.inflate(inflater, container, false)
-        val root: View = binding!!.getRoot()
-        val composeView = ComposeView(requireContext())
-        composeView.setContent {
-            MaterialTheme(
-                colorScheme = lightColorScheme(
-                    primary = colorResource(id = com.ufpb.getha.R.color.green_main),
-                    onPrimary = colorResource(id = com.ufpb.getha.R.color.green_700),
-                ),
+@Composable
+fun CalculadoraScreen() {
+    MyTopBarApp {
+        MaterialTheme(
+            colorScheme = lightColorScheme(
+                primary = colorResource(id = com.ufpb.getha.R.color.green_main),
+                onPrimary = colorResource(id = com.ufpb.getha.R.color.green_700),
+            ),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .background(Color.White),
             ) {
                 CalculadoraSlot()
             }
         }
-        binding!!.root.addView(composeView)
-        return root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
     }
 }
+
+

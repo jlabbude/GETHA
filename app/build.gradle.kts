@@ -66,11 +66,12 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.foundation)
     implementation(libs.tooling)
-    implementation(libs.compmaterial)
     implementation("io.ktor:ktor-client-core:2.3.12")
     implementation("io.ktor:ktor-client-android:2.3.12")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha01")
+    implementation("androidx.navigation:navigation-compose:2.8.2")
+    implementation("androidx.compose.material:material-icons-core:1.7.3")
 }
