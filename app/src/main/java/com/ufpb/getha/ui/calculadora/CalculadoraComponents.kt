@@ -9,23 +9,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.Button
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.ButtonDefaults
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.Checkbox
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.OutlinedTextField
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.SnackbarHost
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,9 +48,8 @@ fun CalculadoraSlot() {
     val slotC2 = remember { mutableStateOf(SlotState(label = "C2")) }
     val slotV2 = remember { mutableStateOf(SlotState(label = "V2")) }
 
-    var valorCalculado by remember { mutableDoubleStateOf(0.0) }
+    var valorDisplay by remember { mutableStateOf("") }
 
-    val green500 = colorResource(id = com.ufpb.getha.R.color.green_500)
     val green700 = colorResource(id = com.ufpb.getha.R.color.green_700)
     val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -79,11 +71,21 @@ fun CalculadoraSlot() {
             )
             OutlinedTextField(
                 value = slotState.value.input,
-                onValueChange = { slotState.value = slotState.value.copy(input = it.replace(',', '.')) },
+                onValueChange = {
+                    slotState.value =
+                        slotState
+                            .value
+                            .copy(input = it
+                                .filterIndexed { index, char ->
+                                    char.isDigit() || (char == '.' || char == ',') && !it.take(index).contains('.') && !it.take(index).contains(',')
+                                }
+                                .replace(',', '.'))
+                    },
                 label = { Text(slotState.value.label, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.padding(end = 8.dp),
                 enabled = enabled
+
             )
         }
     }
@@ -156,15 +158,27 @@ fun CalculadoraSlot() {
                     }
                 } else {
                     try {
-                        valorCalculado = conta(
+                        val contaResultado = conta(
                             Conta(
                                 if (slotC1.value.checked) Variavel.Indefinida else Variavel.Definida(slotC1.value.input.toDouble()),
                                 if (slotV1.value.checked) Variavel.Indefinida else Variavel.Definida(slotV1.value.input.toDouble()),
                                 if (slotC2.value.checked) Variavel.Indefinida else Variavel.Definida(slotC2.value.input.toDouble()),
                                 if (slotV2.value.checked) Variavel.Indefinida else Variavel.Definida(slotV2.value.input.toDouble())
                             )
-                        )!!
-                    } catch (_: NumberFormatException) {
+                        )!! // <- Should never happen but who knows
+                        valorDisplay = if (contaResultado % 1.0 == 0.0) {
+                            contaResultado.toInt().toString()
+                        } else {
+                            if (contaResultado.isNaN()) {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Divisão por 0 ")
+                                }
+                                "0"
+                            } else {
+                                contaResultado.toString()
+                            }
+                        }
+                    } catch (_: NumberFormatException) { // <- Should ALSO never happen but who knows
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar("Insira um número válido!")
                         }
@@ -177,8 +191,8 @@ fun CalculadoraSlot() {
                 .padding(top = 64.dp)
                 .width(200.dp)
                 .height(60.dp),
-            border = BorderStroke(4.dp, green500),
-            colors = ButtonDefaults.buttonColors(backgroundColor = green500)
+            border = BorderStroke(4.dp, green700),
+            colors = ButtonDefaults.buttonColors(containerColor = green700)
         ) {
             Text("Calcular", color = Color.White)
         }
@@ -188,7 +202,7 @@ fun CalculadoraSlot() {
         modifier = Modifier.fillMaxSize(),
     ) {
         Text(
-            text = "$valorCalculado",
+            text = valorDisplay,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 100.dp),

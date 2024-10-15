@@ -6,9 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
 import androidx.fragment.app.Fragment
 import com.ufpb.getha.databinding.FragmentCalculadoraBinding
 
@@ -23,7 +24,12 @@ class CalculadoraFragment : Fragment() {
         val root: View = binding!!.getRoot()
         val composeView = ComposeView(requireContext())
         composeView.setContent {
-            MaterialTheme {
+            MaterialTheme(
+                colorScheme = lightColorScheme(
+                    primary = colorResource(id = com.ufpb.getha.R.color.green_main),
+                    onPrimary = colorResource(id = com.ufpb.getha.R.color.green_700),
+                ),
+            ) {
                 CalculadoraSlot()
             }
         }
