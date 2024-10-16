@@ -1,6 +1,7 @@
 package com.ufpb.getha.ui.aparelhos
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -30,16 +32,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun AparelhosScreen(
     viewModel: AparelhosViewModel = viewModel(),
-    navController: NavController
+    navController: NavController,
+    drawerState: DrawerState,
+    scope: CoroutineScope
 ) {
     val isLoading = viewModel.isLoading.collectAsState().value
     val imageList = viewModel.imageList.collectAsState().value
 
-    MyTopBarApp {
+    MyTopBarApp(name = "Aparelhos", drawerState = drawerState, scope = scope) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -64,8 +69,9 @@ fun AparelhosScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         items(imageList.size) { index ->
+                            Log.w("Getha", "AWAwawaaa$index")
                             val bitmap = imageList[index]
-                            ImageButton(bitmap, index + 1, navController)
+                            ImageButton(bitmap, index, navController)
                         }
                     }
                 }
@@ -102,7 +108,7 @@ fun ImageButton(bitmap: Bitmap, id: Int, navController: NavController) {
             DropdownMenuItem(
                 text = { Text("Manual", color = lighterDarkGray) },
                 onClick = {
-                    navController.navigate(AparelhosFragmentDirections.actionManual(id))
+                    navController.navigate("nav_manual/$id")
                     expanded.value = false
                 },
                 leadingIcon = {
@@ -115,7 +121,7 @@ fun ImageButton(bitmap: Bitmap, id: Int, navController: NavController) {
             DropdownMenuItem(
                 text = { Text("Vídeo", color = lighterDarkGray) },
                 onClick = {
-                    navController.navigate(AparelhosFragmentDirections.actionVideo(id))
+                    navController.navigate("nav_video/$id")
                     expanded.value = false
                 },
                 leadingIcon = {

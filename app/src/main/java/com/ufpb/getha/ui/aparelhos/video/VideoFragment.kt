@@ -1,52 +1,52 @@
 package com.ufpb.getha.ui.aparelhos.video
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
+import android.content.pm.ActivityInfo
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
-
-object Id { var aparelhoId: Int = 0; }
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import io.sanghun.compose.video.RepeatMode
+import io.sanghun.compose.video.VideoPlayer
+import io.sanghun.compose.video.controller.VideoPlayerControllerConfig
+import io.sanghun.compose.video.uri.VideoPlayerMediaItem
 
 @Composable
-fun VideoScreen(viewModel: VideoViewModel) {
-    YourScreen(viewModel = viewModel)
-}
+fun VideoScreen(aparelhoId: String) {
 
-class VideoFragment : Fragment() {
+    val context = LocalContext.current
+    val activity = context as? Activity
 
-    private val viewModel: VideoViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val composeView = ComposeView(requireContext())
-        composeView.setContent {
-            VideoScreen(viewModel = viewModel)
-        }
-        return composeView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-        val args: VideoFragmentArgs by navArgs()
-        Id.aparelhoId = args.aparelhoId
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (activity as? AppCompatActivity)?.supportActionBar?.show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-    }
+    VideoPlayer(
+        mediaItems = listOf(
+            VideoPlayerMediaItem.NetworkMediaItem(
+                url = "http://192.168.15.9:8000/video?id=$aparelhoId",
+            )
+        ),
+        handleLifecycle = true,
+        autoPlay = true,
+        usePlayerController = true,
+        enablePip = false,
+        handleAudioFocus = true,
+        controllerConfig = VideoPlayerControllerConfig(
+            showSpeedAndPitchOverlay = false,
+            showSubtitleButton = false,
+            showCurrentTimeAndTotalTime = true,
+            showBufferingProgress = true,
+            showForwardIncrementButton = true,
+            showBackwardIncrementButton = true,
+            showBackTrackButton = false,
+            showNextTrackButton = false,
+            showRepeatModeButton = false,
+            controllerShowTimeMilliSeconds = 5_000,
+            controllerAutoShow = true,
+            showFullScreenButton = true,
+        ),
+        volume = 1f,
+        repeatMode = RepeatMode.NONE,
+        modifier = Modifier
+            .fillMaxSize(),
+    )
 }

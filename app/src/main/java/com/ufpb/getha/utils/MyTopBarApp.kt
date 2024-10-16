@@ -1,6 +1,7 @@
 package com.ufpb.getha.utils
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,16 +16,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.ufpb.getha.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopBarApp(content:  @Composable ((PaddingValues) -> Unit)) {
+fun MyTopBarApp(
+    name: String,
+    drawerState: DrawerState,
+    scope: CoroutineScope,
+    content: @Composable ((PaddingValues) -> Unit)
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Home",
+                        text = name,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = Color.White,
@@ -32,7 +40,7 @@ fun MyTopBarApp(content:  @Composable ((PaddingValues) -> Unit)) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation drawer open */ }) {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_arrow_forward_ios_24),
                             contentDescription = "Menu Icon",

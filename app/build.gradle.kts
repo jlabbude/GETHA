@@ -74,4 +74,8 @@ dependencies {
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha01")
     implementation("androidx.navigation:navigation-compose:2.8.2")
     implementation("androidx.compose.material:material-icons-core:1.7.3")
+    implementation("io.sanghun:compose-video:1.2.0")
+    implementation("androidx.media3:media3-session:1.4.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.4.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
 }

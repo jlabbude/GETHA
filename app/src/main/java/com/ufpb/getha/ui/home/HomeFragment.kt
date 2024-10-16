@@ -13,22 +13,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ufpb.getha.utils.MyTopBarApp
+import kotlinx.coroutines.CoroutineScope
 import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(drawerState: DrawerState, scope: CoroutineScope) {
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
 
-    // Load image from assets asynchronously
     LaunchedEffect(Unit) {
         val assetManager = context.assets
         val inputStream: InputStream = assetManager.open("logo.png")
         bitmap = BitmapFactory.decodeStream(inputStream)
     }
 
-    MyTopBarApp {
+    MyTopBarApp(
+        name = "Home",
+        drawerState = drawerState,
+        scope = scope) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,12 +52,4 @@ fun HomeScreen() {
             }
         }
     }
-
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomeScreen() {
-    HomeScreen()
 }

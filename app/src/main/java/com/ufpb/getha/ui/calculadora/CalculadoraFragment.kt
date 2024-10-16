@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -13,10 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.ufpb.getha.utils.MyTopBarApp
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun CalculadoraScreen() {
-    MyTopBarApp {
+fun CalculadoraScreen(drawerState: DrawerState, scope: CoroutineScope) {
+    MyTopBarApp(name = "Calculadora", drawerState = drawerState, scope = scope) {
         MaterialTheme(
             colorScheme = lightColorScheme(
                 primary = colorResource(id = com.ufpb.getha.R.color.green_main),

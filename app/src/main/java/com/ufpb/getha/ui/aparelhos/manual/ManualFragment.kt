@@ -1,17 +1,12 @@
 package com.ufpb.getha.ui.aparelhos.manual
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
-import android.os.Bundle
 import android.os.ParcelFileDescriptor
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -30,10 +25,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.request.get
@@ -41,8 +34,20 @@ import io.ktor.client.statement.readBytes
 import java.io.File
 import kotlin.math.abs
 
-object Id { var aparelhoId: Int = 0; }
+@Composable
+fun ManualScreen(aparelhoId: String) {
+    val context = LocalContext.current
+    val pages = remember { mutableStateOf(listOf<Bitmap>()) }
+    LaunchedEffect(Unit) {
+        Log.w("Getha", "Item id is $aparelhoId")
+        val byteArray = HttpClient(Android).get(
+            "http://192.168.15.9:8000/manual?id=${aparelhoId}"
+        ).readBytes()
 
+        pages.value = renderPdf(context, byteArray)
+    }
+    PdfPages(pages.value)
+}
 
 @Composable
 fun PdfPages(pages: List<Bitmap>) {
@@ -94,82 +99,39 @@ fun PdfPageImage(bitmap: Bitmap) {
     Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
 }
 
-@Suppress("DEPRECATION")
-class ManualFragment : Fragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val composeView = ComposeView(requireContext())
-        composeView.setContent {
-            val pages = remember { mutableStateOf(listOf<Bitmap>()) }
-            LaunchedEffect(Unit) {
-                Log.w("Getha", "Item id is ${Id.aparelhoId}")
-                val byteArray = HttpClient(Android).get(
-                    "http://192.168.15.9:8000/manual?id=${Id.aparelhoId}"
-                ).readBytes()
+private fun renderPdf(context: Context, pdfData: ByteArray): List<Bitmap> {
+    val pages = mutableListOf<Bitmap>()
+    val parcelFileDescriptor = createParcelFileDescriptorFromBytes(context, pdfData)
 
-                pages.value = renderPdf(byteArray)
-            }
-            PdfPages(pages.value)
-        }
-        return composeView
+    val renderer = PdfRenderer(parcelFileDescriptor!!)
+
+    val displayMetrics = context.resources.displayMetrics
+    val screenWidth = displayMetrics.widthPixels
+
+    for (i in 0 until renderer.pageCount) {
+        val page = renderer.openPage(i)
+        val scaleFactor = screenWidth.toFloat() / page.width
+        val bitmapHeight = (page.height * scaleFactor).toInt()
+        val bitmap = Bitmap.createBitmap(screenWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.WHITE)
+        canvas.drawBitmap(bitmap, 0f, 0f, null)
+
+        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+        pages.add(bitmap)
+
+        page.close()
     }
 
-    private fun renderPdf(pdfData: ByteArray): List<Bitmap> {
-        val pages = mutableListOf<Bitmap>()
-        val parcelFileDescriptor = createParcelFileDescriptorFromBytes(pdfData)
+    renderer.close()
+    parcelFileDescriptor.close()
 
-        val renderer = PdfRenderer(parcelFileDescriptor!!)
+    return pages
+}
 
-        val displayMetrics = DisplayMetrics()
-        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val screenWidth = displayMetrics.widthPixels
-
-        for (i in 0 until renderer.pageCount) {
-            val page = renderer.openPage(i)
-            val scaleFactor = screenWidth.toFloat() / page.width
-            val bitmapHeight = (page.height * scaleFactor).toInt()
-            val bitmap = Bitmap.createBitmap(screenWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
-
-            val canvas = Canvas(bitmap)
-            canvas.drawColor(Color.WHITE)
-            canvas.drawBitmap(bitmap, 0f, 0f, null)
-
-            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-            pages.add(bitmap)
-
-            page.close()
-        }
-
-        renderer.close()
-        parcelFileDescriptor.close()
-
-        return pages
-    }
-
-    private fun createParcelFileDescriptorFromBytes(byteArray: ByteArray): ParcelFileDescriptor? {
-        val tempFile = File(requireContext().cacheDir, "tempPdf.pdf")
-        tempFile.writeBytes(byteArray)
-        return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-        val args: ManualFragmentArgs by navArgs()
-        Id.aparelhoId = args.aparelhoId
-        Log.w("Getha", "Item id is ${Id.aparelhoId}")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (activity as? AppCompatActivity)?.supportActionBar?.show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-    }
-
+private fun createParcelFileDescriptorFromBytes(context: Context, byteArray: ByteArray): ParcelFileDescriptor? {
+    val tempFile = File(context.cacheDir, "tempPdf.pdf")
+    tempFile.writeBytes(byteArray)
+    return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
 }

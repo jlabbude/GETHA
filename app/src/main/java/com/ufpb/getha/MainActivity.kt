@@ -16,6 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.ufpb.getha.ui.aparelhos.AparelhosScreen
+import com.ufpb.getha.ui.aparelhos.manual.ManualScreen
+import com.ufpb.getha.ui.aparelhos.video.VideoScreen
 import com.ufpb.getha.ui.calculadora.CalculadoraScreen
 import com.ufpb.getha.ui.home.HomeScreen
 import kotlinx.coroutines.launch
@@ -26,6 +28,8 @@ class MainActivity : ComponentActivity() {
         window.decorView.systemUiVisibility = (
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         )
         setContent {
             YourAppTheme {
@@ -92,27 +96,17 @@ fun NavigationDrawerContent() {
         drawerState = drawerState
     ) {
         NavHost(navController = navController, startDestination = "nav_home") {
-            composable("nav_home") { HomeScreen() }
-            composable("nav_calculadora") { CalculadoraScreen() }
-            composable("nav_aparelhos") { AparelhosScreen(navController = navController) }
+            composable("nav_home") { HomeScreen(drawerState = drawerState, scope = scope) }
+            composable("nav_calculadora") { CalculadoraScreen(drawerState = drawerState, scope = scope) }
+            composable("nav_aparelhos") { AparelhosScreen(navController = navController, drawerState = drawerState, scope = scope) }
             composable("nav_manual/{aparelhoId}") { backStackEntry ->
-                val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")
+                val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")!!
                 ManualScreen(aparelhoId)
             }
             composable("nav_video/{aparelhoId}") { backStackEntry ->
-                val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")
+                val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")!!
                 VideoScreen(aparelhoId)
             }
         }
     }
-}
-
-@Composable
-fun ManualScreen(aparelhoId: String?) {
-    // Manual screen content for a specific aparelhoId
-}
-
-@Composable
-fun VideoScreen(aparelhoId: String?) {
-    // Video screen content for a specific aparelhoId
 }
