@@ -1,16 +1,27 @@
 package com.ufpb.getha
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -21,6 +32,7 @@ import com.ufpb.getha.ui.aparelhos.video.VideoScreen
 import com.ufpb.getha.ui.calculadora.CalculadoraScreen
 import com.ufpb.getha.ui.home.HomeScreen
 import kotlinx.coroutines.launch
+import java.io.InputStream
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,12 +70,28 @@ fun NavigationDrawerContent() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var bitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val assetManager = context.assets
+        val inputStream: InputStream = assetManager.open("logo.png")
+        bitmap = BitmapFactory.decodeStream(inputStream)
+    }
 
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
-                Text("Navigation bar", modifier = Modifier.padding(16.dp))
-                HorizontalDivider()
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = "Getha Logo",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+                HorizontalDivider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
                 NavigationDrawerItem(
                     label = { Text("Home") },
                     selected = false,

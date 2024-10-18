@@ -69,7 +69,8 @@ fun CalculadoraSlot() {
         onCheckedChange: (Boolean) -> Unit,
         enabled: Boolean
     ) {
-        Row {
+        Row(modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
+            horizontalArrangement = Arrangement.Center) {
             Checkbox(
                 checked = slotState.value.checked,
                 onCheckedChange = {
@@ -92,8 +93,6 @@ fun CalculadoraSlot() {
                 label = { Text(slotState.value.label, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 enabled = enabled,
-                modifier = Modifier.alignBy(LastBaseline)
-
             )
         }
     }
