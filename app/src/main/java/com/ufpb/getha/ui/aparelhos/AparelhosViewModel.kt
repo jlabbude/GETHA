@@ -22,8 +22,8 @@ class AparelhosViewModel : ViewModel() {
         }
     }
 
-    private val _imageList = MutableStateFlow<List<Bitmap>>(emptyList())
-    val imageList: StateFlow<List<Bitmap>> = _imageList
+    private val _imagesMap = MutableStateFlow<LinkedHashMap<Int, Bitmap>>(linkedMapOf())
+    val imagesMap: StateFlow<LinkedHashMap<Int, Bitmap>> = _imagesMap
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -36,16 +36,16 @@ class AparelhosViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val images = mutableListOf<Bitmap>()
+                val images = mutableMapOf<Int, Bitmap>()
                 for (i in 1..5) {
-                    val byteArray = client.get("http://192.168.15.9:8000/aparelhos_image").readBytes()
+                    val byteArray = client.get("http://192.168.15.12:8000/aparelhos_image").readBytes()
                     val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
                         ?: BitmapFactory.decodeResource(Resources.getSystem(), android.R.drawable.ic_menu_camera)
-                    images.add(bitmap)
+                    images.put(i, bitmap)
                 }
-                _imageList.value = images
+                _imagesMap.value = images as LinkedHashMap<Int, Bitmap>
             } catch (_: Exception) {
-                _imageList.value = listOf()
+                _imagesMap.value = linkedMapOf()
             } finally {
                 _isLoading.value = false
             }

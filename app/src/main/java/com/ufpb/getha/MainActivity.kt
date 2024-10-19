@@ -26,6 +26,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
+import android.graphics.Bitmap
 import com.ufpb.getha.ui.aparelhos.AparelhosScreen
 import com.ufpb.getha.ui.aparelhos.manual.ManualScreen
 import com.ufpb.getha.ui.aparelhos.video.VideoScreen
@@ -70,7 +71,7 @@ fun NavigationDrawerContent() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var bitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {

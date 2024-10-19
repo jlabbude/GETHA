@@ -1,7 +1,6 @@
 package com.ufpb.getha.ui.aparelhos
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +32,7 @@ import androidx.navigation.NavController
 import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
+import com.ufpb.getha.R
 
 @Composable
 fun AparelhosScreen(
@@ -42,7 +42,7 @@ fun AparelhosScreen(
     scope: CoroutineScope
 ) {
     val isLoading = viewModel.isLoading.collectAsState().value
-    val imageList = viewModel.imageList.collectAsState().value
+    val imageMap = viewModel.imagesMap.collectAsState().value
 
     MyTopBarApp(name = "Aparelhos", drawerState = drawerState, scope = scope) {
         Box(
@@ -54,24 +54,23 @@ fun AparelhosScreen(
             if (isLoading) {
                 CircularProgressIndicator(
                     color = colorResource(
-                        id = com.ufpb.getha.R.color.green_main
+                        id = R.color.green_main
                     ),
                     modifier = Modifier.align(
                         androidx.compose.ui.Alignment.Center
                     )
                 )
             } else {
-                if (imageList.isEmpty()) {
+                if (imageMap.isEmpty()) {
                     ServidorErrorPopup(navController)
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Adaptive(150.dp),
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        items(imageList.size) { index ->
-                            Log.w("Getha", "AWAwawaaa$index")
-                            val bitmap = imageList[index]
-                            ImageButton(bitmap, index, navController)
+                        items(imageMap.keys.size) { id ->
+                            val bitmap = imageMap[id]!!
+                            ImageButton(bitmap, id, navController)
                         }
                     }
                 }
@@ -113,7 +112,7 @@ fun ImageButton(bitmap: Bitmap, id: Int, navController: NavController) {
                 },
                 leadingIcon = {
                     Icon(
-                        painter = painterResource(id = com.ufpb.getha.R.drawable.baseline_chrome_reader_mode_24),
+                        painter = painterResource(id = R.drawable.baseline_chrome_reader_mode_24),
                         contentDescription = null
                     )
                 }
@@ -126,7 +125,7 @@ fun ImageButton(bitmap: Bitmap, id: Int, navController: NavController) {
                 },
                 leadingIcon = {
                     Icon(
-                        painter = painterResource(id = com.ufpb.getha.R.drawable.video),
+                        painter = painterResource(id = R.drawable.video),
                         contentDescription = null
                     )
                 }

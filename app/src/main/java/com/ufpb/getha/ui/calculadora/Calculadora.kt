@@ -37,7 +37,7 @@ fun CalculadoraScreen(drawerState: DrawerState = rememberDrawerState(initialValu
                     .padding(it)
                     .background(Color.White),
             ) {
-                CalculadoraSlot()
+                CalculadoraSlots()
             }
         }
     }
