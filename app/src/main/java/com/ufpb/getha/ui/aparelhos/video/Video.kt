@@ -22,7 +22,7 @@ fun VideoScreen(aparelhoId: String) {
     VideoPlayer(
         mediaItems = listOf(
             VideoPlayerMediaItem.NetworkMediaItem(
-                url = "http://192.168.15.9:8000/video?id=$aparelhoId",
+                url = "http://192.168.15.12:8000/video?id=$aparelhoId",
             )
         ),
         handleLifecycle = true,
