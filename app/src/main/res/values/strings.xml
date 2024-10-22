@@ -1,12 +1,4 @@
 <resources>
     <string name="app_name">GETHA</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_manual">Manual</string>
-    <string name="action_video">Vídeo</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_calculadora">Calculadora</string>
-    <string name="menu_aparelhos">Aparelhos</string>
 </resources>

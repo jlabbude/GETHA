@@ -14,7 +14,7 @@ import io.sanghun.compose.video.uri.VideoPlayerMediaItem
 fun VideoScreen(aparelhoId: String) {
 
     val context = LocalContext.current
-    val activity = context as? Activity
+    context as? Activity
 
     VideoPlayer(
         mediaItems = listOf(

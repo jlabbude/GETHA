@@ -1,5 +1,3 @@
-@file:Suppress("KotlinConstantConditions")
-
 package com.ufpb.getha.ui.calculadora
 
 import androidx.compose.foundation.background

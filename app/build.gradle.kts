@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.media3.ui)
     implementation(libs.navigation.ui)
+    //noinspection UseTomlInstead
     implementation("androidx.core:core-ktx:1.13.1")
     implementation(libs.media3.exoplayer)
     implementation(libs.lifecycle.viewmodel.compose)
@@ -66,16 +67,28 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.foundation)
     implementation(libs.tooling)
+    //noinspection UseTomlInstead
     implementation("io.ktor:ktor-client-core:2.3.12")
+    //noinspection UseTomlInstead
     implementation("io.ktor:ktor-client-android:2.3.12")
+    //noinspection UseTomlInstead
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    //noinspection UseTomlInstead
     implementation("androidx.compose.material3:material3:1.3.0")
+    //noinspection UseTomlInstead
     implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha01")
-    implementation("androidx.navigation:navigation-compose:2.8.2")
-    implementation("androidx.compose.material:material-icons-core:1.7.3")
+    //noinspection UseTomlInstead
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha02")
+    //noinspection UseTomlInstead
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+    //noinspection UseTomlInstead
+    implementation("androidx.compose.material:material-icons-core:1.7.4")
+    //noinspection UseTomlInstead
     implementation("io.sanghun:compose-video:1.2.0")
+    //noinspection UseTomlInstead
     implementation("androidx.media3:media3-session:1.4.1")
+    //noinspection UseTomlInstead
     implementation("androidx.media3:media3-exoplayer-dash:1.4.1")
+    //noinspection UseTomlInstead
     implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
 }
