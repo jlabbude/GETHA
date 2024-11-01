@@ -46,7 +46,6 @@ data class SlotState(
 @Composable
 @Preview
 fun CalculadoraSlots() {
-
     val slotC1 = remember { mutableStateOf(SlotState(label = "Incógnita", checked = true)) }
     val slotV1 = remember { mutableStateOf(SlotState(label = "V1")) }
     val slotC2 = remember { mutableStateOf(SlotState(label = "C2")) }
@@ -173,9 +172,9 @@ fun CalculadoraSlots() {
                         valorDisplay = if (contaResultado % 1.0 == 0.0) {
                             contaResultado.toInt().toString()
                         } else {
-                            if (contaResultado.isNaN()) {
+                            if (contaResultado.isNaN() || contaResultado.isInfinite()) {
                                 coroutineScope.launch {
-                                    snackbarHostState.showSnackbar("Divisão por 0 ")
+                                    snackbarHostState.showSnackbar("Divisão por 0")
                                 }
                                 "0"
                             } else {

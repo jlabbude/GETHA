@@ -14,12 +14,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.ufpb.getha.utils.MyTopBarApp
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-@Preview
 fun CalculadoraScreen(drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
                       scope: CoroutineScope = rememberCoroutineScope()) {
     MyTopBarApp(name = "Calculadora", drawerState = drawerState, scope = scope) {

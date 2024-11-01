@@ -69,8 +69,8 @@ fun AparelhosScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         items(imageMap.keys.size) { id ->
-                            val bitmap = imageMap[id]!!
-                            ImageButton(bitmap, id, navController)
+                            val bitmap = imageMap[id+1]!!
+                            ImageButton(bitmap, id+1, navController)
                         }
                     }
                 }

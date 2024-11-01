@@ -33,9 +33,7 @@ fun HomeScreen(drawerState: DrawerState, scope: CoroutineScope) {
         scope = scope) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(16.dp),
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             if (bitmap != null) {
