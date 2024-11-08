@@ -130,7 +130,10 @@ private fun renderPdf(context: Context, pdfData: ByteArray): List<Bitmap> {
     return pages
 }
 
-private fun createParcelFileDescriptorFromBytes(context: Context, byteArray: ByteArray): ParcelFileDescriptor? {
+private fun createParcelFileDescriptorFromBytes(
+    context: Context,
+    byteArray: ByteArray
+): ParcelFileDescriptor? {
     val tempFile = File(context.cacheDir, "tempPdf.pdf")
     tempFile.writeBytes(byteArray)
     return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)

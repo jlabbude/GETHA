@@ -29,10 +29,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ufpb.getha.R
 import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
-import com.ufpb.getha.R
 
 @Composable
 fun AparelhosScreen(
@@ -69,8 +69,8 @@ fun AparelhosScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         items(imageMap.keys.size) { id ->
-                            val bitmap = imageMap[id+1]!!
-                            ImageButton(bitmap, id+1, navController)
+                            val bitmap: Bitmap = imageMap[id]!!
+                            ImageButton(bitmap, id, navController)
                         }
                     }
                 }

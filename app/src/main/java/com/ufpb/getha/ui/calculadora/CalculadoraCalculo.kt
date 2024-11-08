@@ -1,15 +1,16 @@
 package com.ufpb.getha.ui.calculadora
 
 sealed class Variavel {
-    data class Definida(val v: Double): Variavel() {
+    data class Definida(val v: Double) : Variavel() {
         fun getVal(): Double {
             return this.v
         }
     }
-    data object Indefinida: Variavel()
+
+    data object Indefinida : Variavel()
 }
 
-data class Conta (
+data class Conta(
     val c1: Variavel,
     val v1: Variavel,
     val c2: Variavel,

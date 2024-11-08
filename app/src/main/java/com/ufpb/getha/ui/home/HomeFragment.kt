@@ -1,4 +1,5 @@
 package com.ufpb.getha.ui.home
+
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -30,7 +31,8 @@ fun HomeScreen(drawerState: DrawerState, scope: CoroutineScope) {
     MyTopBarApp(
         name = "Home",
         drawerState = drawerState,
-        scope = scope) {
+        scope = scope
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize(),

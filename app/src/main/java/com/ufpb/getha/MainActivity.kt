@@ -1,5 +1,6 @@
 package com.ufpb.getha
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
@@ -26,7 +27,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
-import android.graphics.Bitmap
 import com.ufpb.getha.ui.aparelhos.AparelhosScreen
 import com.ufpb.getha.ui.aparelhos.manual.ManualScreen
 import com.ufpb.getha.ui.aparelhos.video.VideoScreen
@@ -39,11 +39,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        )
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
         setContent {
             YourAppTheme {
                 NavigationDrawerContent()
@@ -109,7 +109,12 @@ fun NavigationDrawerContent() {
                         scope.launch { drawerState.close() }
                         navController.navigate("nav_calculadora")
                     },
-                    icon = { Icon(painter = painterResource(R.drawable.baseline_calculate_24), contentDescription = null) }
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_calculate_24),
+                            contentDescription = null
+                        )
+                    }
                 )
                 NavigationDrawerItem(
                     label = { Text("Aparelhos") },
@@ -118,7 +123,12 @@ fun NavigationDrawerContent() {
                         scope.launch { drawerState.close() }
                         navController.navigate("nav_aparelhos")
                     },
-                    icon = { Icon(painter = painterResource(R.drawable.baseline_device_hub_24), contentDescription = null) }
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_device_hub_24),
+                            contentDescription = null
+                        )
+                    }
                 )
             }
         },
@@ -126,8 +136,19 @@ fun NavigationDrawerContent() {
     ) {
         NavHost(navController = navController, startDestination = "nav_home") {
             composable("nav_home") { HomeScreen(drawerState = drawerState, scope = scope) }
-            composable("nav_calculadora") { CalculadoraScreen(drawerState = drawerState, scope = scope) }
-            composable("nav_aparelhos") { AparelhosScreen(navController = navController, drawerState = drawerState, scope = scope) }
+            composable("nav_calculadora") {
+                CalculadoraScreen(
+                    drawerState = drawerState,
+                    scope = scope
+                )
+            }
+            composable("nav_aparelhos") {
+                AparelhosScreen(
+                    navController = navController,
+                    drawerState = drawerState,
+                    scope = scope
+                )
+            }
             composable("nav_manual/{aparelhoId}") { backStackEntry ->
                 val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")!!
                 ManualScreen(aparelhoId)

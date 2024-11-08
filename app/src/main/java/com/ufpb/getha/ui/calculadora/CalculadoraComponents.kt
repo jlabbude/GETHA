@@ -65,8 +65,12 @@ fun CalculadoraSlots() {
         onCheckedChange: (Boolean) -> Unit,
         enabled: Boolean
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
-            horizontalArrangement = Arrangement.Center) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 24.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
             Checkbox(
                 checked = slotState.value.checked,
                 onCheckedChange = {
@@ -82,10 +86,12 @@ fun CalculadoraSlots() {
                             .value
                             .copy(input = it
                                 .filterIndexed { index, char ->
-                                    char.isDigit() || (char == '.' || char == ',') && !it.take(index).contains('.') && !it.take(index).contains(',')
+                                    char.isDigit() || (char == '.' || char == ',') && !it.take(
+                                        index
+                                    ).contains('.') && !it.take(index).contains(',')
                                 }
                                 .replace(',', '.'))
-                    },
+                },
                 label = { Text(slotState.value.label, modifier = Modifier.alpha(0.5f)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 enabled = enabled,
@@ -95,13 +101,16 @@ fun CalculadoraSlots() {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
     ) {
         SlotRow(
             slotState = slotC1,
             onCheckedChange = { checked ->
                 if (checked) {
-                    slotC1.value = slotC1.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotC1.value =
+                        slotC1.value.copy(label = "Incógnita", input = "", checked = true)
                     slotV1.value = slotV1.value.copy(label = "V1", checked = false)
                     slotC2.value = slotC2.value.copy(label = "C2", checked = false)
                     slotV2.value = slotV2.value.copy(label = "V2", checked = false)
@@ -115,7 +124,8 @@ fun CalculadoraSlots() {
             onCheckedChange = { checked ->
                 if (checked) {
                     slotC1.value = slotC1.value.copy(label = "C1", checked = false)
-                    slotV1.value = slotV1.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotV1.value =
+                        slotV1.value.copy(label = "Incógnita", input = "", checked = true)
                     slotC2.value = slotC2.value.copy(label = "C2", checked = false)
                     slotV2.value = slotV2.value.copy(label = "V2", checked = false)
                 }
@@ -129,7 +139,8 @@ fun CalculadoraSlots() {
                 if (checked) {
                     slotC1.value = slotC1.value.copy(label = "C1", checked = false)
                     slotV1.value = slotV1.value.copy(label = "V1", checked = false)
-                    slotC2.value = slotC2.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotC2.value =
+                        slotC2.value.copy(label = "Incógnita", input = "", checked = true)
                     slotV2.value = slotV2.value.copy(label = "V2", checked = false)
                 }
             },
@@ -143,7 +154,8 @@ fun CalculadoraSlots() {
                     slotC1.value = slotC1.value.copy(label = "C1", checked = false)
                     slotV1.value = slotV1.value.copy(label = "V1", checked = false)
                     slotC2.value = slotC2.value.copy(label = "C2", checked = false)
-                    slotV2.value = slotV2.value.copy(label = "Incógnita", input = "", checked = true)
+                    slotV2.value =
+                        slotV2.value.copy(label = "Incógnita", input = "", checked = true)
                 }
             },
             enabled = !slotV2.value.checked
@@ -163,10 +175,18 @@ fun CalculadoraSlots() {
                     try {
                         val contaResultado = conta(
                             Conta(
-                                if (slotC1.value.checked) Variavel.Indefinida else Variavel.Definida(slotC1.value.input.toDouble()),
-                                if (slotV1.value.checked) Variavel.Indefinida else Variavel.Definida(slotV1.value.input.toDouble()),
-                                if (slotC2.value.checked) Variavel.Indefinida else Variavel.Definida(slotC2.value.input.toDouble()),
-                                if (slotV2.value.checked) Variavel.Indefinida else Variavel.Definida(slotV2.value.input.toDouble())
+                                if (slotC1.value.checked) Variavel.Indefinida else Variavel.Definida(
+                                    slotC1.value.input.toDouble()
+                                ),
+                                if (slotV1.value.checked) Variavel.Indefinida else Variavel.Definida(
+                                    slotV1.value.input.toDouble()
+                                ),
+                                if (slotC2.value.checked) Variavel.Indefinida else Variavel.Definida(
+                                    slotC2.value.input.toDouble()
+                                ),
+                                if (slotV2.value.checked) Variavel.Indefinida else Variavel.Definida(
+                                    slotV2.value.input.toDouble()
+                                )
                             )
                         )!! // <- Should never happen but who knows
                         valorDisplay = if (contaResultado % 1.0 == 0.0) {

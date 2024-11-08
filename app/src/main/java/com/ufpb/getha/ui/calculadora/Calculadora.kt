@@ -18,8 +18,10 @@ import com.ufpb.getha.utils.MyTopBarApp
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun CalculadoraScreen(drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-                      scope: CoroutineScope = rememberCoroutineScope()) {
+fun CalculadoraScreen(
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    scope: CoroutineScope = rememberCoroutineScope()
+) {
     MyTopBarApp(name = "Calculadora", drawerState = drawerState, scope = scope) {
         MaterialTheme(
             colorScheme = lightColorScheme(

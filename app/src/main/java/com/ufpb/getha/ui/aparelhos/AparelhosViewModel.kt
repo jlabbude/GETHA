@@ -1,4 +1,5 @@
 package com.ufpb.getha.ui.aparelhos
+
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,6 +13,7 @@ import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class AparelhosViewModel : ViewModel() {
     private val client = HttpClient(Android) {
@@ -37,11 +39,18 @@ class AparelhosViewModel : ViewModel() {
             try {
                 _isLoading.value = true
                 val images = mutableMapOf<Int, Bitmap>()
-                for (i in 1..5) {
-                    val byteArray = client.get("http://192.168.15.12:8000/aparelhos_image").readBytes()
+                for (id in Json.decodeFromString<List<Int>>(
+                    client.get("http://192.168.15.12:8000/aparelhos_ids")
+                        .toString()
+                )) {
+                    val byteArray =
+                        client.get("http://192.168.15.12:8000/aparelhos_image?id=$id").readBytes()
                     val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                        ?: BitmapFactory.decodeResource(Resources.getSystem(), android.R.drawable.ic_menu_camera)
-                    images.put(i, bitmap)
+                        ?: BitmapFactory.decodeResource(
+                            Resources.getSystem(),
+                            android.R.drawable.ic_menu_camera
+                        )
+                    images.put(id, bitmap)
                 }
                 _imagesMap.value = images as LinkedHashMap<Int, Bitmap>
             } catch (_: Exception) {
