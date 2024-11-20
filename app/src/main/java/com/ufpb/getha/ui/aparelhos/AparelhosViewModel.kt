@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.readBytes
 import io.ktor.client.statement.readText
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import java.net.ConnectException
 
 
 class AparelhosViewModel : ViewModel() {
@@ -58,7 +61,12 @@ class AparelhosViewModel : ViewModel() {
                     images.put(id, bitmap)
                 }
                 _imagesMap.value = images as LinkedHashMap<Int, Bitmap>
-            }  finally {
+            } catch (_: ConnectException) {
+                _imagesMap.value = linkedMapOf()
+            } catch (_: HttpRequestTimeoutException) {
+                _imagesMap.value = linkedMapOf()
+            }
+            finally {
                 _isLoading.value = false
             }
         }

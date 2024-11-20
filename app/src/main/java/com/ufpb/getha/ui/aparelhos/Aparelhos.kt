@@ -68,11 +68,10 @@ fun AparelhosScreen(
                         columns = GridCells.Adaptive(150.dp),
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        items(count = imageMap.keys.size) {
-                            for (id in imageMap.keys) {
-                                val bitmap: Bitmap = imageMap[id]!!
-                                ImageButton(bitmap, id, navController)
-                            }
+                        items(count = imageMap.keys.size, key = { index -> index }) { index ->
+                            val id = imageMap.keys.elementAt(index)
+                            val bitmap = imageMap[id]!!
+                            ImageButton(bitmap, id, navController)
                         }
                     }
                 }
