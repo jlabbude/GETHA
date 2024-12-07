@@ -62,7 +62,6 @@ dependencies {
     implementation(libs.exoplayer.core)
     implementation(libs.exoplayer.ui)
     implementation(libs.mediassesion)
-    implementation(libs.design)
     implementation(libs.ui)
     implementation(libs.foundation)
     implementation(libs.tooling)

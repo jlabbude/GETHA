@@ -30,7 +30,6 @@ media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", versi
 exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer-core", version = "2.19.1" }
 exoplayer-ui = { group = "com.google.android.exoplayer", name = "exoplayer-ui", version = "2.19.1" }
 mediassesion = { group = "com.google.android.exoplayer", name = "extension-mediasession", version = "2.19.1" }
-design = { group = "com.android.support", name = "design", version = "28.0.0" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 foundation = { module = "androidx.compose.foundation:foundation", version.ref = "ui" }
 tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui" }
