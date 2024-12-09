@@ -34,18 +34,24 @@ fun HomeScreen(drawerState: DrawerState, scope: CoroutineScope) {
         scope = scope
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             if (bitmap != null) {
-                Image(
-                    bitmap = bitmap!!.asImageBitmap(),
-                    contentDescription = "GETHA Logo",
-                    modifier = Modifier
-                        .size(200.dp),
-                    contentScale = ContentScale.Crop
-                )
+                Column {
+                    /*(modifier = Modifier.align(Alignment.Center))
+                        Text(
+                            text = "Bem-vindo",
+                            style = TextStyle(fontSize = 24.sp),
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )*/
+                    Image(
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = "GETHA Logo",
+                        modifier = Modifier.size(200.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             } else {
                 CircularProgressIndicator(color = Color.Green)
             }

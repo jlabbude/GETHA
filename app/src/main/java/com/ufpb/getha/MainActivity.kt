@@ -31,6 +31,7 @@ import com.ufpb.getha.ui.aparelhos.AparelhosScreen
 import com.ufpb.getha.ui.aparelhos.manual.ManualScreen
 import com.ufpb.getha.ui.aparelhos.video.VideoScreen
 import com.ufpb.getha.ui.calculadora.CalculadoraScreen
+import com.ufpb.getha.ui.catalogo.CatalogoScreen
 import com.ufpb.getha.ui.home.HomeScreen
 import kotlinx.coroutines.launch
 import java.io.InputStream
@@ -64,6 +65,8 @@ fun YourAppTheme(content: @Composable () -> Unit) {
         content = content
     )
 }
+
+//todo make constructor to avoid boilerplate of adding ModalNavigationDrawer and NavHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,6 +133,20 @@ fun NavigationDrawerContent() {
                         )
                     }
                 )
+                NavigationDrawerItem(
+                    label = { Text("Catálogo") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate("nav_catalogo")
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.home_storage_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                            contentDescription = null
+                        )
+                    }
+                )
             }
         },
         drawerState = drawerState
@@ -156,6 +173,13 @@ fun NavigationDrawerContent() {
             composable("nav_video/{aparelhoId}") { backStackEntry ->
                 val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")!!
                 VideoScreen(aparelhoId)
+            }
+            composable("nav_catalogo") {
+                CatalogoScreen(
+                    navController = navController,
+                    drawerState = drawerState,
+                    scope = scope
+                )
             }
         }
     }
