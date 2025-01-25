@@ -27,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
+import com.ufpb.getha.IP
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.request.get
@@ -41,7 +42,7 @@ fun ManualScreen(aparelhoId: String) {
     LaunchedEffect(Unit) {
         Log.w("Getha", "Item id is $aparelhoId")
         val byteArray = HttpClient(Android).get(
-            "http://192.168.15.12:8000/manual?id=${aparelhoId}"
+            "http://$IP/serve_manual?id=${aparelhoId}"
         ).readBytes()
 
         pages.value = renderPdf(context, byteArray)

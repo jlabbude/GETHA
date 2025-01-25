@@ -36,6 +36,8 @@ import com.ufpb.getha.ui.home.HomeScreen
 import kotlinx.coroutines.launch
 import java.io.InputStream
 
+var IP = "192.168.15.10"
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

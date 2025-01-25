@@ -33,6 +33,7 @@ import com.ufpb.getha.R
 import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
+import java.util.UUID
 
 @Composable
 fun AparelhosScreen(
@@ -81,7 +82,7 @@ fun AparelhosScreen(
 }
 
 @Composable
-fun ImageButton(bitmap: Bitmap, id: Int, navController: NavController) {
+fun ImageButton(bitmap: Bitmap, id: String, navController: NavController) {
     var expanded = remember { mutableStateOf(false) }
 
     var lighterDarkGray = Color(0xFF666666)

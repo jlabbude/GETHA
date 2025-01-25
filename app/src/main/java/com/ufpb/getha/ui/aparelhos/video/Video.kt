@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.ufpb.getha.IP
 import io.sanghun.compose.video.RepeatMode
 import io.sanghun.compose.video.VideoPlayer
 import io.sanghun.compose.video.controller.VideoPlayerControllerConfig
@@ -19,7 +20,7 @@ fun VideoScreen(aparelhoId: String) {
     VideoPlayer(
         mediaItems = listOf(
             VideoPlayerMediaItem.NetworkMediaItem(
-                url = "http://192.168.15.12:8000/video?id=$aparelhoId",
+                url = "http://$IP/serve_video?id=$aparelhoId",
             )
         ),
         handleLifecycle = true,

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ufpb.getha.IP
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.HttpRequestTimeoutException
@@ -31,8 +32,8 @@ class AparelhosViewModel : ViewModel() {
         }
     }
 
-    private val _imagesMap = MutableStateFlow<LinkedHashMap<Int, Bitmap>>(linkedMapOf())
-    val imagesMap: StateFlow<LinkedHashMap<Int, Bitmap>> = _imagesMap
+    private val _imagesMap = MutableStateFlow<LinkedHashMap<String, Bitmap>>(linkedMapOf())
+    val imagesMap: StateFlow<LinkedHashMap<String, Bitmap>> = _imagesMap
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -45,14 +46,12 @@ class AparelhosViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val images = mutableMapOf<Int, Bitmap>()
-                val res = client.get("http://192.168.15.12:8000/aparelhos_ids").bodyAsText()
-                val ids = Json.decodeFromString<List<Int>>(
-                    res
-                )
+                val images = mutableMapOf<String, Bitmap>()
+                val res = client.get("http://$IP/serve_ids").bodyAsText()
+                val ids = Json.decodeFromString<List<String>>(res)
                 for (id in ids) {
                     val byteArray =
-                        client.get("http://192.168.15.12:8000/aparelhos_image?id=$id").readBytes()
+                        client.get("http://$IP/serve_image?id=$id").readBytes()
                     val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
                         ?: BitmapFactory.decodeResource(
                             Resources.getSystem(),
@@ -60,7 +59,7 @@ class AparelhosViewModel : ViewModel() {
                         )
                     images.put(id, bitmap)
                 }
-                _imagesMap.value = images as LinkedHashMap<Int, Bitmap>
+                _imagesMap.value = images as LinkedHashMap<String, Bitmap>
             } catch (_: ConnectException) {
                 _imagesMap.value = linkedMapOf()
             } catch (_: HttpRequestTimeoutException) {
