@@ -31,7 +31,7 @@ import com.ufpb.getha.ui.aparelhos.AparelhosScreen
 import com.ufpb.getha.ui.aparelhos.manual.ManualScreen
 import com.ufpb.getha.ui.aparelhos.video.VideoScreen
 import com.ufpb.getha.ui.calculadora.CalculadoraScreen
-import com.ufpb.getha.ui.catalogo.CatalogoScreen
+import com.ufpb.getha.ui.catalogo.ZoonoseScreen
 import com.ufpb.getha.ui.home.HomeScreen
 import kotlinx.coroutines.launch
 import java.io.InputStream
@@ -70,7 +70,7 @@ fun YourAppTheme(content: @Composable () -> Unit) {
 
 //todo make constructor to avoid boilerplate of adding ModalNavigationDrawer and NavHost
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NavigationDrawerContent() {
     val navController = rememberNavController()
@@ -136,11 +136,11 @@ fun NavigationDrawerContent() {
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text("Catálogo") },
+                    label = { Text("Zoonoses") },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navController.navigate("nav_catalogo")
+                        navController.navigate("nav_zoonose")
                     },
                     icon = {
                         Icon(
@@ -176,8 +176,8 @@ fun NavigationDrawerContent() {
                 val aparelhoId = backStackEntry.arguments?.getString("aparelhoId")!!
                 VideoScreen(aparelhoId)
             }
-            composable("nav_catalogo") {
-                CatalogoScreen(
+            composable("nav_zoonose") {
+                ZoonoseScreen(
                     navController = navController,
                     drawerState = drawerState,
                     scope = scope
