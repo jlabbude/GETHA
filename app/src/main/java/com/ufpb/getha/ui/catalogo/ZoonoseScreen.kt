@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
-import com.ufpb.getha.ui.catalogo.Organismo
 import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
@@ -106,25 +105,33 @@ fun ZoonoseScreen(
     val isLoading = viewModel.isLoading.collectAsState().value
     val zoonoses = viewModel.zoonoses.collectAsState().value
     MyTopBarApp(name = "Zoonoses", drawerState = drawerState, scope = scope) {
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize()
-                .background(Color.White)
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (isLoading) {
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .background(Color.White),
+            ) {
                 CircularProgressIndicator(
                     color = colorResource(
                         id = R.color.green_main
                     ),
                     modifier = Modifier.align(
-                        Alignment.CenterHorizontally
+                        Alignment.Center
                     )
                 )
-            } else if (zoonoses.isEmpty()) {
-                ServidorErrorPopup(navController)
-            } else {
+            }
+        } else if (zoonoses.isEmpty()) {
+            ServidorErrorPopup(navController)
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .verticalScroll(rememberScrollState())
+            ) {
+
                 SearchBar(
                     modifier = Modifier
                         .padding(bottom = 24.dp)
@@ -234,74 +241,74 @@ fun ZoonoseScreen(
 }
 
 
-    @ExperimentalMaterial3ExpressiveApi
-    @Composable
-    fun ZoonoseCard(
-        nomePopular: String,
-        nomeCientifico: String,
-        modifier: Modifier,
-        @Suppress("LocalVariableName") Organismo: OrganismoComponent
-    ) {
-        OutlinedCard(
-            modifier = modifier,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceBright,
-            ),
-            border = BorderStroke((1.5).dp, colorResource(id = R.color.green_main)),
-            content = {
-                Row(modifier = Modifier.fillMaxSize()) {
-                    Box(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Organismo(
-                            Modifier
-                                .size(55.dp)
-                                .align(Alignment.Center)
-                        )
-                        /*Canvas(
-                            modifier = Modifier.fillMaxSize(),
-                            onDraw = {
-                                drawCircle(
-                                    color = mainColor,
-                                    radius = 70.0f
-                                )
-                            }
-                        )
-                        Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            text = nomePopular[0].toString(),
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )*/
-                    }
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Text(
-                            text = nomePopular,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontSize = TextUnit(20f, TextUnitType.Sp),
-                                fontWeight = FontWeight.Medium
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Text(
-                            modifier = Modifier.padding(top = 6.dp),
-                            text = nomeCientifico,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontStyle = FontStyle.Italic,
-                                fontWeight = FontWeight.Normal
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+@ExperimentalMaterial3ExpressiveApi
+@Composable
+fun ZoonoseCard(
+    nomePopular: String,
+    nomeCientifico: String,
+    modifier: Modifier,
+    @Suppress("LocalVariableName") Organismo: OrganismoComponent
+) {
+    OutlinedCard(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
+        ),
+        border = BorderStroke((1.5).dp, colorResource(id = R.color.green_main)),
+        content = {
+            Row(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Organismo(
+                        Modifier
+                            .size(55.dp)
+                            .align(Alignment.Center)
+                    )
+                    /*Canvas(
+                        modifier = Modifier.fillMaxSize(),
+                        onDraw = {
+                            drawCircle(
+                                color = mainColor,
+                                radius = 70.0f
+                            )
+                        }
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = nomePopular[0].toString(),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )*/
                 }
-            },
-            onClick = {
-
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(
+                        text = nomePopular,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = TextUnit(20f, TextUnitType.Sp),
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        modifier = Modifier.padding(top = 6.dp),
+                        text = nomeCientifico,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
-        )
-    }
+        },
+        onClick = {
+
+        }
+    )
+}
