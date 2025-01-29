@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -25,6 +26,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,14 +42,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
-import com.ufpb.getha.ui.aparelhos.AparelhosViewModel
+import com.ufpb.getha.ui.catalogo.Organismo
 import com.ufpb.getha.utils.MyTopBarApp
+import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
 
 val mainColor = Color(0xFF598462)
 
-typealias Organismo = @Composable (modifier: Modifier) -> Unit
-val BACTERIA = @Composable { modifier: Modifier ->
+typealias OrganismoComponent = @Composable (modifier: Modifier) -> Unit
+
+val BACTERIA: OrganismoComponent = @Composable { modifier: Modifier ->
     Icon(
         painter = painterResource(id = R.drawable.bacteria),
         contentDescription = null,
@@ -55,7 +59,7 @@ val BACTERIA = @Composable { modifier: Modifier ->
         tint = mainColor
     )
 }
-val VIRUS = @Composable { modifier: Modifier ->
+val VIRUS: OrganismoComponent = @Composable { modifier: Modifier ->
     Icon(
         painter = painterResource(id = R.drawable.virus),
         contentDescription = null,
@@ -63,7 +67,7 @@ val VIRUS = @Composable { modifier: Modifier ->
         tint = mainColor
     )
 }
-val FUNGO = @Composable { modifier: Modifier ->
+val FUNGO: OrganismoComponent = @Composable { modifier: Modifier ->
     Icon(
         painter = painterResource(id = R.drawable.fungo),
         contentDescription = null,
@@ -71,9 +75,17 @@ val FUNGO = @Composable { modifier: Modifier ->
         tint = mainColor
     )
 }
-val PROTOZOARIO = @Composable { modifier: Modifier ->
+val PROTOZOARIO: OrganismoComponent = @Composable { modifier: Modifier ->
     Icon(
         painter = painterResource(id = R.drawable.protozoario),
+        contentDescription = null,
+        modifier = modifier,
+        tint = mainColor
+    )
+}
+val HELMINTO: OrganismoComponent = @Composable { modifier: Modifier ->
+    Icon(
+        painter = painterResource(id = R.drawable.helminto),
         contentDescription = null,
         modifier = modifier,
         tint = mainColor
@@ -84,12 +96,15 @@ val PROTOZOARIO = @Composable { modifier: Modifier ->
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ZoonoseScreen(
-    viewModel: AparelhosViewModel = viewModel(),
+    viewModel: ZoonoseViewModel = viewModel(),
     navController: NavController,
     drawerState: DrawerState,
     scope: CoroutineScope
 ) {
     val textFieldState = remember { mutableStateOf(TextFieldState()) }
+
+    val isLoading = viewModel.isLoading.collectAsState().value
+    val zoonoses = viewModel.zoonoses.collectAsState().value
     MyTopBarApp(name = "Zoonoses", drawerState = drawerState, scope = scope) {
         Column(
             modifier = Modifier
@@ -98,93 +113,119 @@ fun ZoonoseScreen(
                 .background(Color.White)
                 .verticalScroll(rememberScrollState())
         ) {
-            SearchBar(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .size(height = 50.dp, width = 400.dp)
-                    .align(Alignment.CenterHorizontally),
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        state = textFieldState.value,
-                        onSearch = {  },
-                        expanded = false,
-                        onExpandedChange = {  },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Outlined.Search,
-                                contentDescription = null,
-                                tint = colorResource(R.color.green_main)
-                            )
-                        }, // maybe icon button later?
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = colorResource(
+                        id = R.color.green_main
+                    ),
+                    modifier = Modifier.align(
+                        Alignment.CenterHorizontally
                     )
-                },
-                colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceBright,
-                ),
-                expanded = false,
-                onExpandedChange = {  },
-                tonalElevation = 0.dp,
-                shadowElevation = 0.dp,
-            ) {
-                /*Column(Modifier.verticalScroll(rememberScrollState())) {
-                    repeat(4) { idx ->
-                        val resultText = "Suggestion $idx"
-                        ListItem(
-                            headlineContent = { Text(resultText) },
-                            supportingContent = { Text("Additional info") },
-                            leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier =
-                            Modifier.clickable {
-                                textFieldState.value.setTextAndPlaceCursorAtEnd(resultText)
-                                expanded.value = false
-                            }
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            } else if (zoonoses.isEmpty()) {
+                ServidorErrorPopup(navController)
+            } else {
+                SearchBar(
+                    modifier = Modifier
+                        .padding(bottom = 24.dp)
+                        .size(height = 50.dp, width = 400.dp)
+                        .align(Alignment.CenterHorizontally),
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            state = textFieldState.value,
+                            onSearch = { },
+                            expanded = false,
+                            onExpandedChange = { },
+                            trailingIcon = {
+                                Icon(
+                                    Icons.Outlined.Search,
+                                    contentDescription = null,
+                                    tint = colorResource(R.color.green_main)
+                                )
+                            }, // maybe icon button later?
                         )
-                    }
-                }*/
-            }
-            for (i in 0..10) {
-                if (i % 2 == 0) {
+                    },
+                    colors = SearchBarDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceBright,
+                    ),
+                    expanded = false,
+                    onExpandedChange = { },
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp,
+                ) {
+                    /*Column(Modifier.verticalScroll(rememberScrollState())) {
+                        repeat(4) { idx ->
+                            val resultText = "Suggestion $idx"
+                            ListItem(
+                                headlineContent = { Text(resultText) },
+                                supportingContent = { Text("Additional info") },
+                                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier =
+                                Modifier.clickable {
+                                    textFieldState.value.setTextAndPlaceCursorAtEnd(resultText)
+                                    expanded.value = false
+                                }
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                            )
+                        }
+                    }*/
+                }
+                /*ZoonoseCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .size(width = 400.dp, height = 105.dp),
+                    nomePopular = "Brucelose",
+                    nomeCientifico = "Brucella melitensis",
+                    Organismo = BACTERIA
+                )
+                ZoonoseCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .size(width = 400.dp, height = 105.dp),
+                    nomePopular = "Raiva",
+                    nomeCientifico = "Lyssavirus",
+                    Organismo = VIRUS
+                )
+                ZoonoseCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .size(width = 400.dp, height = 105.dp),
+                    nomePopular = "Histoplasmose",
+                    nomeCientifico = "Histoplasma capsulatum",
+                    Organismo = FUNGO
+                )
+                ZoonoseCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .size(width = 400.dp, height = 105.dp),
+                    nomePopular = "Toxoplasmose",
+                    nomeCientifico = "Toxoplasma Gondii",
+                    Organismo = PROTOZOARIO
+                )
+                ZoonoseCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .size(width = 400.dp, height = 105.dp),
+                    nomePopular = "Esquistossomose",
+                    nomeCientifico = "Schistosoma mansoni",
+                    Organismo = HELMINTO
+                )*/
+                for (zoonose in zoonoses) {
                     ZoonoseCard(
                         modifier = Modifier
                             .padding(8.dp)
                             .align(Alignment.CenterHorizontally)
                             .size(width = 400.dp, height = 105.dp),
-                        nomePopular = "Brucelose",
-                        nomeCientifico = "Brucella melitensis",
-                        Organismo = BACTERIA
-                    )
-                } else if (i % 3 == 0) {
-                    ZoonoseCard(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .size(width = 400.dp, height = 105.dp),
-                        nomePopular = "Raiva",
-                        nomeCientifico = "Lyssavirus",
-                        Organismo = VIRUS
-                    )
-                } else if (i % 5 == 0) {
-                    ZoonoseCard(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .size(width = 400.dp, height = 105.dp),
-                        nomePopular = "Histoplasmose",
-                        nomeCientifico = "Histoplasma capsulatum",
-                        Organismo = FUNGO
-                    )
-                } else {
-                    ZoonoseCard(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .size(width = 400.dp, height = 105.dp),
-                        nomePopular = "Toxoplasmose ",
-                        nomeCientifico = "Toxoplasma Gondii",
-                        Organismo = PROTOZOARIO
+                        nomePopular = zoonose.nome,
+                        nomeCientifico = zoonose.nomeCientifico,
+                        Organismo = Organismo.fromString(zoonose.organismo).toComponent()
                     )
                 }
             }
@@ -192,61 +233,75 @@ fun ZoonoseScreen(
     }
 }
 
-@ExperimentalMaterial3ExpressiveApi
-@Composable
-fun ZoonoseCard(nomePopular: String, nomeCientifico: String, modifier: Modifier, @Suppress("LocalVariableName") Organismo: Organismo) {
-    OutlinedCard(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceBright,
-        ),
-        border = BorderStroke((1.5).dp, colorResource(id = R.color.green_main)),
-        content = {
-            Row(modifier = Modifier.fillMaxSize()) {
-                Box(modifier = Modifier.width(100.dp).align(Alignment.CenterVertically)) {
-                    Organismo(Modifier.size(55.dp).align(Alignment.Center))
-                    /*Canvas(
-                        modifier = Modifier.fillMaxSize(),
-                        onDraw = {
-                            drawCircle(
-                                color = mainColor,
-                                radius = 70.0f
-                            )
-                        }
-                    )
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = nomePopular[0].toString(),
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )*/
-                }
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                ) {
-                    Text(
-                        text = nomePopular,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = TextUnit(20f, TextUnitType.Sp),
-                            fontWeight = FontWeight.Medium
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = 6.dp),
-                        text = nomeCientifico,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontStyle = FontStyle.Italic,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-            }
-        },
-        onClick = {
 
-        }
-    )
-}
+    @ExperimentalMaterial3ExpressiveApi
+    @Composable
+    fun ZoonoseCard(
+        nomePopular: String,
+        nomeCientifico: String,
+        modifier: Modifier,
+        @Suppress("LocalVariableName") Organismo: OrganismoComponent
+    ) {
+        OutlinedCard(
+            modifier = modifier,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceBright,
+            ),
+            border = BorderStroke((1.5).dp, colorResource(id = R.color.green_main)),
+            content = {
+                Row(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Organismo(
+                            Modifier
+                                .size(55.dp)
+                                .align(Alignment.Center)
+                        )
+                        /*Canvas(
+                            modifier = Modifier.fillMaxSize(),
+                            onDraw = {
+                                drawCircle(
+                                    color = mainColor,
+                                    radius = 70.0f
+                                )
+                            }
+                        )
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = nomePopular[0].toString(),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )*/
+                    }
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Text(
+                            text = nomePopular,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontSize = TextUnit(20f, TextUnitType.Sp),
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            modifier = Modifier.padding(top = 6.dp),
+                            text = nomeCientifico,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontStyle = FontStyle.Italic,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            },
+            onClick = {
+
+            }
+        )
+    }

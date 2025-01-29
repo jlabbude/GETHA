@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs.kotlin")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -70,6 +71,7 @@ dependencies {
     implementation("io.ktor:ktor-client-json:2.0.0")
     implementation("io.ktor:ktor-client-serialization:2.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
