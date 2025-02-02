@@ -5,16 +5,20 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -91,139 +97,157 @@ fun ZoonoseCatalog(
         listOf("Sintoma1", "sintoma2")
     )
 ) {
-    Column(
+    val context = LocalContext.current
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        Row(
+        Canvas(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp),
-        ) {
-            Column {
-                Canvas(
-                    modifier = Modifier
-                        .size(height = 230.dp, width = 50.dp)
-                        .padding(start = 20.dp),
-                    onDraw = {
-                        drawRect(
-                            color = mainColor,
-                            size = size
-                        )
-                    }
+                .width(width = 50.dp)
+                .fillMaxHeight()
+                .padding(start = 20.dp),
+            onDraw = {
+                drawRect(
+                    color = mainColor,
+                    size = size
                 )
-                Canvas(
-                    modifier = Modifier
-                        .size(
-                            width = 50.dp,
-                            height = 20.dp
+            }
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp),
+            ) {
+                Column {
+                   /*Canvas(
+                        modifier = Modifier
+                            .size(
+                                width = 50.dp,
+                                height = 20.dp
+                            )
+                            .padding(start = 20.dp)
+                            .rotate(180f)
+                    ) {
+                        val width = size.width
+                        val height = size.height
+
+                        val path = Path().apply {
+                            moveTo(width / 2, 0f)
+                            lineTo(0f, height)
+                            lineTo(width, height)
+                            close()
+                        }
+                        drawPath(
+                            path = path,
+                            color = mainColor,
+                            style = Fill
                         )
-                        .padding(start = 20.dp)
-                        .rotate(180f)
+                    }*/
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(
+                            start = 20.dp,
+                            top = 20.dp,
+                            end = 20.dp,
+                        )
+                        .size(80.dp)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterVertically)
                 ) {
-                    val width = size.width
-                    val height = size.height
-
-                    val path = Path().apply {
-                        moveTo(width / 2, 0f)
-                        lineTo(0f, height)
-                        lineTo(width, height)
-                        close()
-                    }
-
-                    drawPath(
-                        path = path,
-                        color = mainColor,
-                        style = Fill
+                    Text(
+                        text = zoonose.nome,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = zoonose.nomeCientifico,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+                val context = LocalContext.current
 
+                LaunchedEffect(Unit) {
+                    val assetManager = context.assets
+                    val inputStream: InputStream = assetManager.open("rabies.jpg")
+                    bitmap = BitmapFactory.decodeStream(inputStream)
+                }
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = "lyssa",
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier
+                            .size(230.dp)
+                            .padding(10.dp)
+                            .shadow(
+                                elevation = 12.dp,
+                                shape = RoundedCornerShape(25.dp),
+                                clip = true
+                            )
+                            .clip(RoundedCornerShape(25.dp))
+                            .align(Alignment.CenterVertically),
+                    )
+                }
             }
             Column(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(
-                        start = 20.dp,
-                        top = 20.dp,
+                        start = 50.dp,
+                        top = 36.dp,
                         end = 20.dp,
+                        bottom = 20.dp
                     )
-                    .size(80.dp)
-                    .fillMaxHeight()
-                    .align(Alignment.CenterVertically)
             ) {
-                Text(
-                    text = zoonose.nome,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = zoonose.nomeCientifico,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-            val context = LocalContext.current
-
-            LaunchedEffect(Unit) {
-                val assetManager = context.assets
-                val inputStream: InputStream = assetManager.open("rabies.jpg")
-                bitmap = BitmapFactory.decodeStream(inputStream)
-            }
-            if (bitmap != null) {
-                Image(
-                    bitmap = bitmap!!.asImageBitmap(),
-                    contentDescription = "lyssa",
-                    contentScale = ContentScale.FillBounds,
+                ZoonoseInfoCell("Vetores", zoonose.vetores.joinToString())
+                ZoonoseInfoCell("Agentes", zoonose.agentes.joinToString())
+                ZoonoseInfoCell("Transmissões", zoonose.transmissoes.joinToString())
+                ZoonoseInfoCell("Profilaxia", zoonose.profilaxia.joinToString())
+                ZoonoseInfoCell("Sintomas", zoonose.sintomas.joinToString())
+                HorizontalDivider(
                     modifier = Modifier
-                        .size(230.dp)
-                        .padding(10.dp)
-                        .shadow(
-                            elevation = 12.dp,
-                            shape = RoundedCornerShape(25.dp),
-                            clip = true
-                        )
-                        .clip(RoundedCornerShape(25.dp))
-                        .align(Alignment.CenterVertically),
+                        .align(Alignment.CenterHorizontally)
+                        .width(300.dp)
+                        .padding(top = 30.dp)
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp).padding(start = 30.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                text = "Vetores: ${zoonose.vetores.joinToString()}"
+    }
+}
+
+@Composable
+fun ZoonoseInfoCell(title: String, content: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 20.dp,
+                top = 10.dp,
+                bottom = 20.dp,
+                end = 20.dp
             )
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                text = "Transmissoes: ${zoonose.transmissoes.joinToString()}"
-            )
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                text = "Sintomas: ${zoonose.sintomas.joinToString()}"
-            )
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                text = "Agentes: ${zoonose.agentes.joinToString()}"
-            )
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                text = "Profilaxia: ${zoonose.profilaxia.joinToString()}"
-            )
-        }
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            modifier = Modifier.padding(start = 10.dp),
+            text = content,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
