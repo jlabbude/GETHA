@@ -32,6 +32,7 @@ import com.ufpb.getha.ui.aparelhos.manual.ManualScreen
 import com.ufpb.getha.ui.aparelhos.video.VideoScreen
 import com.ufpb.getha.ui.calculadora.CalculadoraScreen
 import com.ufpb.getha.ui.catalogo.ZoonoseScreen
+import com.ufpb.getha.ui.catalogo.entries.ZoonoseEntryScreen
 import com.ufpb.getha.ui.home.HomeScreen
 import kotlinx.coroutines.launch
 import java.io.InputStream
@@ -41,6 +42,7 @@ var IP = "192.168.15.10"
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = (
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -182,6 +184,10 @@ fun NavigationDrawerContent() {
                     drawerState = drawerState,
                     scope = scope
                 )
+            }
+            composable("nav_zoonose_full/{zoonoseId}") { backStackEntry ->
+                val zoonoseId = backStackEntry.arguments?.getString("zoonoseId")!!
+                ZoonoseEntryScreen(zoonoseID = zoonoseId)
             }
         }
     }

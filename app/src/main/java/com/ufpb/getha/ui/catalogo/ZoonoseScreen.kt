@@ -226,13 +226,15 @@ fun ZoonoseScreen(
                 )*/
                 for (zoonose in zoonoses) {
                     ZoonoseCard(
+                        id = zoonose.id,
                         modifier = Modifier
                             .padding(8.dp)
                             .align(Alignment.CenterHorizontally)
                             .size(width = 400.dp, height = 105.dp),
                         nomePopular = zoonose.nome,
                         nomeCientifico = zoonose.nomeCientifico,
-                        Organismo = Organismo.fromString(zoonose.organismo).toComponent()
+                        Organismo = Organismo.fromString(zoonose.organismo).toComponent(),
+                        navController = navController
                     )
                 }
             }
@@ -244,10 +246,12 @@ fun ZoonoseScreen(
 @ExperimentalMaterial3ExpressiveApi
 @Composable
 fun ZoonoseCard(
+    id: String,
     nomePopular: String,
     nomeCientifico: String,
     modifier: Modifier,
-    @Suppress("LocalVariableName") Organismo: OrganismoComponent
+    @Suppress("LocalVariableName") Organismo: OrganismoComponent,
+    navController: NavController
 ) {
     OutlinedCard(
         modifier = modifier,
@@ -308,7 +312,7 @@ fun ZoonoseCard(
             }
         },
         onClick = {
-
+            navController.navigate("nav_zoonose_full/$id")
         }
     )
 }
