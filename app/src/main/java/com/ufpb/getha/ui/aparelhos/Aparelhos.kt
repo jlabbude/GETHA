@@ -3,6 +3,7 @@ package com.ufpb.getha.ui.aparelhos
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DropdownMenu
@@ -21,6 +23,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -30,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
+import com.ufpb.getha.ui.catalogo.mainColor
 import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
-import java.util.UUID
 
 @Composable
 fun AparelhosScreen(
@@ -62,12 +66,12 @@ fun AparelhosScreen(
                     )
                 )
             } else {
-                if (imageMap.isEmpty()) {
+                if (imageMap.isEmpty) {
                     ServidorErrorPopup(navController)
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Adaptive(150.dp),
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(5.dp)
                     ) {
                         items(count = imageMap.keys.size, key = { index -> index }) { index ->
                             val id = imageMap.keys.elementAt(index)
@@ -90,15 +94,28 @@ fun ImageButton(bitmap: Bitmap, id: String, navController: NavController) {
     Box(
         modifier = Modifier
             .padding(8.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp)
+            )
             .background(Color.White)
+            .clip(RoundedCornerShape(16.dp))
             .clickable { expanded.value = true }
             .aspectRatio(1f)
+            .border(
+                width = (1.5).dp,
+                color = mainColor,
+                shape = RoundedCornerShape(16.dp)
+            )
+
     ) {
         Image(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .fillMaxSize()
+                .shadow(16.dp)
         )
 
         // Show dropdown menu

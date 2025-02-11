@@ -1,5 +1,6 @@
 package com.ufpb.getha.ui.catalogo.entries
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Canvas
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,10 +48,14 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.ufpb.getha.IP
 import com.ufpb.getha.ui.catalogo.Organismo
 import com.ufpb.getha.ui.catalogo.mainColor
@@ -123,7 +129,7 @@ fun ZoonoseCatalog(
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize().statusBarsPadding()
             .background(MaterialTheme.colorScheme.surface)
     ) {
         Column(
@@ -280,15 +286,7 @@ fun ZoonoseCatalog(
                 )
                 Text(
                     modifier = Modifier.padding(top = 10.dp, start = 30.dp, end = 30.dp),
-                    text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus rutrum aliquam urna. Donec laoreet tellus tempus erat porttitor, feugiat imperdiet justo dictum. Donec in velit laoreet enim tincidunt pretium nec eu nunc. Fusce metus turpis, euismod vitae egestas ut, suscipit id nisi. Fusce non nulla nec mi posuere cursus. Nulla pretium arcu quis ex iaculis sollicitudin. Maecenas id leo convallis dui facilisis convallis volutpat eu augue. Pellentesque feugiat, nisl quis convallis lobortis, felis metus commodo augue, id cursus quam dolor in ligula. Morbi et quam pulvinar, mattis felis sed, tempus ante. Donec scelerisque dolor sed urna consectetur efficitur.\n" +
-                            "\n" +
-                            "Morbi lacinia, dolor at vestibulum accumsan, odio sapien luctus mi, et maximus velit tortor eget eros. Integer pharetra est eget fringilla fringilla. Donec lacinia nisl augue, a fermentum urna tempor eget. Donec posuere tellus ac tincidunt blandit. In scelerisque dui felis, sit amet faucibus ipsum dignissim at. Donec vel quam sodales, accumsan quam in, vehicula risus. Nulla efficitur libero at tempor consectetur. Fusce metus eros, interdum in consequat ac, facilisis quis est. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque luctus porttitor ex. Nam in lectus ligula.\n" +
-                            "\n" +
-                            "Ut maximus sodales mi a tristique. Phasellus a turpis leo. Quisque feugiat, dolor sit amet bibendum dignissim, augue turpis finibus elit, ut facilisis dolor odio eu sapien. In in magna tortor. Quisque vestibulum sapien sit amet vestibulum rhoncus. Aenean porta elit turpis, in dictum turpis congue vitae. Aliquam mattis ex a vestibulum pellentesque. Vestibulum iaculis est in sagittis vestibulum. Maecenas quis nibh mi. Sed sit amet pharetra odio. In sollicitudin, purus nec fringilla mollis, metus nulla tempus est, non rutrum nisl justo sed elit. Maecenas congue ligula vitae quam feugiat, et bibendum risus semper. Proin tincidunt augue ipsum, sit amet ultrices dui auctor in.\n" +
-                            "\n" +
-                            "Quisque porttitor tincidunt blandit. Donec sed laoreet dui. Donec ipsum nisi, vulputate a erat eget, viverra mollis lacus. Sed a luctus libero, eget condimentum ex. Vivamus placerat justo quis feugiat finibus. In quam nibh, molestie vel vehicula ut, aliquet a sapien. Curabitur scelerisque enim nec ligula pretium, ac faucibus augue tempus. In vulputate tellus eu metus rutrum, et lacinia risus maximus. Donec blandit lorem in augue commodo placerat. Suspendisse id erat feugiat, ultricies neque id, malesuada eros. Nam imperdiet nulla ac pellentesque posuere. Donec sapien ex, sollicitudin ac mollis sit amet, vestibulum a est. Nulla tincidunt viverra consectetur. Sed ac tortor feugiat sem lacinia semper at eget libero.\n" +
-                            "\n" +
-                            "Aenean cursus cursus justo quis pharetra. Morbi tempus, mauris facilisis eleifend facilisis, purus purus rutrum ex, et bibendum risus nulla nec est. Nullam facilisis bibendum lorem, at dignissim augue vestibulum vitae. Praesent porta magna ut tempor tempor. In hac habitasse platea dictumst. Mauris erat massa, auctor sed elementum id, molestie in mauris. Praesent tincidunt metus eget fringilla sagittis.",
+                    text = zoonose.descricao,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
