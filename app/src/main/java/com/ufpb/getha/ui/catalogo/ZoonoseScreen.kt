@@ -1,5 +1,6 @@
 package com.ufpb.getha.ui.catalogo
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,9 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CardDefaults
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -43,7 +45,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
 import com.ufpb.getha.utils.MyTopBarApp
-import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
 
 val mainColor = Color(0xFF598462)
@@ -91,6 +92,7 @@ val HELMINTO: OrganismoComponent = @Composable { modifier: Modifier ->
     )
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @ExperimentalMaterial3ExpressiveApi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,9 +103,12 @@ fun ZoonoseScreen(
     scope: CoroutineScope
 ) {
     val textFieldState = remember { mutableStateOf(TextFieldState()) }
+    val _zoonoses = viewModel.zoonoses.collectAsState().value
+    var zoonoses = remember { mutableStateOf(mutableListOf<ZoonoseCardJSON>()) }
+    val focus = LocalFocusManager.current
+    zoonoses.value = _zoonoses.toMutableList()
 
     val isLoading = viewModel.isLoading.collectAsState().value
-    val zoonoses = viewModel.zoonoses.collectAsState().value
     MyTopBarApp(name = "Zoonoses", drawerState = drawerState, scope = scope) {
         if (isLoading) {
             Box(
@@ -121,26 +126,37 @@ fun ZoonoseScreen(
                     )
                 )
             }
-        } else if (zoonoses.isEmpty()) {
-            ServidorErrorPopup(navController)
         } else {
             Column(
                 modifier = Modifier
                     .padding(it)
                     .fillMaxSize()
                     .background(Color.White)
-                    .verticalScroll(rememberScrollState())
             ) {
 
                 SearchBar(
                     modifier = Modifier
                         .padding(bottom = 24.dp)
-                        .size(height = 50.dp, width = 400.dp)
+                        .size(height = 60.dp, width = 400.dp)
                         .align(Alignment.CenterHorizontally),
                     inputField = {
                         SearchBarDefaults.InputField(
+                            textStyle = MaterialTheme.typography.bodyMedium,
                             state = textFieldState.value,
-                            onSearch = { },
+                            onSearch = {
+                                focus.clearFocus()
+                                val zoo = mutableListOf<ZoonoseCardJSON>()
+                                for (zoonose in _zoonoses) {
+                                    if (zoonose.nome.contains(
+                                            textFieldState.value.text,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        zoo.add(zoonose)
+                                    }
+                                }
+                                zoonoses.value = zoo
+                            },
                             expanded = false,
                             onExpandedChange = { },
                             trailingIcon = {
@@ -159,83 +175,32 @@ fun ZoonoseScreen(
                     onExpandedChange = { },
                     tonalElevation = 0.dp,
                     shadowElevation = 0.dp,
-                ) {
-                    /*Column(Modifier.verticalScroll(rememberScrollState())) {
-                        repeat(4) { idx ->
-                            val resultText = "Suggestion $idx"
-                            ListItem(
-                                headlineContent = { Text(resultText) },
-                                supportingContent = { Text("Additional info") },
-                                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier =
-                                Modifier.clickable {
-                                    textFieldState.value.setTextAndPlaceCursorAtEnd(resultText)
-                                    expanded.value = false
-                                }
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                ) {}
+                if (zoonoses.value.isEmpty()) {
+                    Text(
+                        text = "Nenhuma zoonose encontrada",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    LazyColumn {
+                        items(zoonoses.value) { zoonose ->
+                            ZoonoseCard(
+                                id = zoonose.id,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .size(width = 400.dp, height = 105.dp),
+                                nomePopular = zoonose.nome,
+                                nomeCientifico = zoonose.nomeCientifico,
+                                Organismo = Organismo.fromString(zoonose.organismo).toComponent(),
+                                navController = navController
                             )
                         }
-                    }*/
-                }
-                /*ZoonoseCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .size(width = 400.dp, height = 105.dp),
-                    nomePopular = "Brucelose",
-                    nomeCientifico = "Brucella melitensis",
-                    Organismo = BACTERIA
-                )
-                ZoonoseCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .size(width = 400.dp, height = 105.dp),
-                    nomePopular = "Raiva",
-                    nomeCientifico = "Lyssavirus",
-                    Organismo = VIRUS
-                )
-                ZoonoseCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .size(width = 400.dp, height = 105.dp),
-                    nomePopular = "Histoplasmose",
-                    nomeCientifico = "Histoplasma capsulatum",
-                    Organismo = FUNGO
-                )
-                ZoonoseCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .size(width = 400.dp, height = 105.dp),
-                    nomePopular = "Toxoplasmose",
-                    nomeCientifico = "Toxoplasma Gondii",
-                    Organismo = PROTOZOARIO
-                )
-                ZoonoseCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .size(width = 400.dp, height = 105.dp),
-                    nomePopular = "Esquistossomose",
-                    nomeCientifico = "Schistosoma mansoni",
-                    Organismo = HELMINTO
-                )*/
-                for (zoonose in zoonoses) {
-                    ZoonoseCard(
-                        id = zoonose.id,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .size(width = 400.dp, height = 105.dp),
-                        nomePopular = zoonose.nome,
-                        nomeCientifico = zoonose.nomeCientifico,
-                        Organismo = Organismo.fromString(zoonose.organismo).toComponent(),
-                        navController = navController
-                    )
+                    }
                 }
             }
         }
