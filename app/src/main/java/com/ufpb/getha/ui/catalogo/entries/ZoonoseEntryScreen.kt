@@ -1,10 +1,9 @@
 package com.ufpb.getha.ui.catalogo.entries
 
-import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -36,7 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
@@ -44,18 +45,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.ufpb.getha.IP
 import com.ufpb.getha.ui.catalogo.Organismo
 import com.ufpb.getha.ui.catalogo.mainColor
@@ -95,7 +90,10 @@ fun ZoonoseEntryScreen(zoonoseID: String) {
         )
     }
     if (zoonose.value != null) {
-        ZoonoseCatalog(zoonose = zoonose.value!!)
+        @Suppress("USELESS_CAST")
+        ZoonoseCatalog(
+            zoonose = zoonose.value!!,
+        )
     }
 }
 
@@ -129,7 +127,8 @@ fun ZoonoseCatalog(
 
     Box(
         modifier = Modifier
-            .fillMaxSize().statusBarsPadding()
+            .fillMaxSize()
+            .statusBarsPadding()
             .background(MaterialTheme.colorScheme.surface)
     ) {
         Column(
@@ -213,47 +212,26 @@ fun ZoonoseCatalog(
                     val inputStream: InputStream = assetManager.open("rabies.jpg")
                     bitmap = BitmapFactory.decodeStream(inputStream)
                 }
-                if (bitmap != null) {
-                    Image(
-                        bitmap = bitmap!!.asImageBitmap(),
-                        contentDescription = "lyssa",
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
+                Box {
+                    if (Build.VERSION.SDK_INT >= 31) {
+                        Organismo.fromString(zoonose.organismo).toComponent()(
+                            Modifier
+                                .size(200.dp)
+                                .padding(10.dp)
+                                .align(Alignment.Center)
+                                .offset(x = (-1).dp, y = (1).dp)
+                                .blur(10.dp)
+                                .alpha(0.3f),
+                        )
+                    }
+                    Organismo.fromString(zoonose.organismo).toComponent()(
+                        Modifier
                             .size(230.dp)
                             .padding(10.dp)
-                            .shadow(
-                                elevation = 12.dp,
-                                shape = RoundedCornerShape(25.dp),
-                                clip = true
-                            )
-                            .clip(RoundedCornerShape(25.dp))
-                            .align(Alignment.CenterVertically),
+                            .align(Alignment.Center),
                     )
                 }
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 50.dp,
-                        top = 36.dp,
-                        end = 20.dp,
-                        bottom = 20.dp
-                    )
-            ) {
-                ZoonoseInfoCell("Agentes", zoonose.agentes.joinToString())
-                ZoonoseInfoCell("Transmissões", zoonose.transmissoes.joinToString())
-                ZoonoseInfoCell("Vetores", zoonose.vetores.joinToString())
-                ZoonoseInfoCell("Regiões de incidência", zoonose.regioes.joinToString())
-                ZoonoseInfoCell("Profilaxia", zoonose.profilaxia.joinToString())
-                ZoonoseInfoCell("Diagnosticos", zoonose.diagnosticos.joinToString())
-            }
-            HorizontalDivider(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .width(300.dp)
-                    .padding(top = 10.dp)
-            )
             IconButton(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -290,6 +268,29 @@ fun ZoonoseCatalog(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+            }
+            HorizontalDivider(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .width(300.dp)
+                    .padding(top = 10.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 50.dp,
+                        top = 36.dp,
+                        end = 20.dp,
+                        bottom = 20.dp
+                    )
+            ) {
+                ZoonoseInfoCell("Agentes", zoonose.agentes.joinToString())
+                ZoonoseInfoCell("Transmissões", zoonose.transmissoes.joinToString())
+                ZoonoseInfoCell("Vetores", zoonose.vetores.joinToString())
+                ZoonoseInfoCell("Regiões de incidência", zoonose.regioes.joinToString())
+                ZoonoseInfoCell("Profilaxia", zoonose.profilaxia.joinToString())
+                ZoonoseInfoCell("Diagnosticos", zoonose.diagnosticos.joinToString())
             }
         }
     }
