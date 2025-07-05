@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
 import com.ufpb.getha.utils.MyTopBarApp
+import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
 
 val mainColor = Color(0xFF598462)
@@ -104,6 +105,10 @@ fun ZoonoseScreen(
 ) {
     val textFieldState = remember { mutableStateOf(TextFieldState()) }
     val _zoonoses = viewModel.zoonoses.collectAsState().value
+    var connErr = false
+    if (_zoonoses.isEmpty()) {
+        connErr = true
+    }
     var zoonoses = remember { mutableStateOf(mutableListOf<ZoonoseCardJSON>()) }
     val focus = LocalFocusManager.current
     zoonoses.value = _zoonoses.toMutableList()
@@ -126,12 +131,14 @@ fun ZoonoseScreen(
                     )
                 )
             }
+        } else if (connErr) {
+            ServidorErrorPopup(navController)
         } else {
             Column(
                 modifier = Modifier
                     .padding(it)
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.onSurface)
             ) {
 
                 SearchBar(

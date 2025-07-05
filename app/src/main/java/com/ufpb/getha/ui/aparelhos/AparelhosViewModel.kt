@@ -44,7 +44,7 @@ class AparelhosViewModel : ViewModel() {
             try {
                 _isLoading.value = true
                 val images = mutableMapOf<String, Bitmap>()
-                val res = client.get("http://$IP/serve_ids").bodyAsText()
+                val res = client.get("http://$IP/serve_aparelhos_ids").bodyAsText()
                 val ids = Json.decodeFromString<List<String>>(res)
                 for (id in ids) {
                     val byteArray =
@@ -61,8 +61,9 @@ class AparelhosViewModel : ViewModel() {
                 _imagesMap.value = linkedMapOf()
             } catch (_: HttpRequestTimeoutException) {
                 _imagesMap.value = linkedMapOf()
-            }
-            finally {
+            } catch (_: Exception) {
+                _imagesMap.value = linkedMapOf()
+            } finally {
                 _isLoading.value = false
             }
         }
