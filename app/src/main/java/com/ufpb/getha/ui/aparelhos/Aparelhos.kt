@@ -17,6 +17,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,12 +26,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
@@ -74,9 +79,9 @@ fun AparelhosScreen(
                         modifier = Modifier.padding(5.dp)
                     ) {
                         items(count = imageMap.keys.size, key = { index -> index }) { index ->
-                            val id = imageMap.keys.elementAt(index)
-                            val bitmap = imageMap[id]!!
-                            ImageButton(bitmap, id, navController)
+                            val aparelho = imageMap.keys.elementAt(index)
+                            val bitmap = imageMap[aparelho]!!
+                            ImageButton(bitmap, aparelho, navController)
                         }
                     }
                 }
@@ -86,7 +91,7 @@ fun AparelhosScreen(
 }
 
 @Composable
-fun ImageButton(bitmap: Bitmap, id: String, navController: NavController) {
+fun ImageButton(bitmap: Bitmap , aparelho: AparelhoJSON , navController: NavController) {
     var expanded = remember { mutableStateOf(false) }
 
     var lighterDarkGray = Color(0xFF666666)
@@ -109,6 +114,22 @@ fun ImageButton(bitmap: Bitmap, id: String, navController: NavController) {
             )
 
     ) {
+        Text(
+            aparelho.nome,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .align(androidx.compose.ui.Alignment.BottomCenter)
+                .zIndex(1f),
+            fontSize = 48.sp,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                shadow = Shadow(
+                    color = Color(0x40000000),
+                    offset = Offset(3.0f, 3.0f)
+                ),
+                fontSize = 64.sp
+            ),
+            color = Color(0xFF0B4C0E)
+        )
         Image(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = null,
@@ -126,7 +147,7 @@ fun ImageButton(bitmap: Bitmap, id: String, navController: NavController) {
             DropdownMenuItem(
                 text = { Text("Manual", color = lighterDarkGray) },
                 onClick = {
-                    navController.navigate("nav_manual/$id")
+                    navController.navigate("nav_manual/$aparelho.id")
                     expanded.value = false
                 },
                 leadingIcon = {
@@ -139,7 +160,7 @@ fun ImageButton(bitmap: Bitmap, id: String, navController: NavController) {
             DropdownMenuItem(
                 text = { Text("Vídeo", color = lighterDarkGray) },
                 onClick = {
-                    navController.navigate("nav_video/$id")
+                    navController.navigate("nav_video/$aparelho.id")
                     expanded.value = false
                 },
                 leadingIcon = {
