@@ -74,18 +74,8 @@ class ZoonoseViewModel : ViewModel() {
     private fun fetchZoonose() {
         viewModelScope.launch {
             try {
-                val idsRes = client.get("http://$IP/serve_zoonose_ids").bodyAsText()
-                val ids = Json.decodeFromString<List<String>>(idsRes)
-                val zooCards = mutableListOf<ZoonoseCardJSON>()
-
-                for (id in ids) {
-                    val zoo = client.get("http://$IP/get_card_info?id=$id").bodyAsText()
-                    Log.d("ZoonoseViewModel", "fetchZoonose: $zoo")
-                    val card = Json.decodeFromString<ZoonoseCardJSON>(zoo)
-                    zooCards.add(card)
-                }
-
-                _zoonoses.value = zooCards
+                val zoonosesRes = client.get("http://$IP/serve_zoonose").bodyAsText()
+                _zoonoses.value = Json.decodeFromString<List<ZoonoseCardJSON>>(zoonosesRes)
             } catch (e: ConnectException) {
                 Log.e("ZoonoseViewModel", "Connection error", e)
                 _zoonoses.value = emptyList()
