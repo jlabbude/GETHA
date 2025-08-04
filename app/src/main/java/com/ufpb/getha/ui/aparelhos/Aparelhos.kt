@@ -44,6 +44,8 @@ import com.ufpb.getha.utils.MyTopBarApp
 import com.ufpb.getha.utils.ServidorErrorPopup
 import kotlinx.coroutines.CoroutineScope
 
+private const val MAX_LEN = 11
+
 @Composable
 fun AparelhosScreen(
     viewModel: AparelhosViewModel = viewModel(),
@@ -90,11 +92,24 @@ fun AparelhosScreen(
     }
 }
 
+/*@Preview
+BitmapFactory.decodeStream(LocalContext.current.assets.open("logo.png")!!)!!,
+AparelhoJSON(id = "1", nome = "Banho Maria"),
+rememberNavController()
+ */
 @Composable
-fun ImageButton(bitmap: Bitmap , aparelho: AparelhoJSON , navController: NavController) {
+fun ImageButton(
+    bitmap: Bitmap,
+    aparelho: AparelhoJSON,
+    navController: NavController,
+) {
     var expanded = remember { mutableStateOf(false) }
 
     var lighterDarkGray = Color(0xFF666666)
+
+    if (aparelho.nome.length > MAX_LEN) {
+        aparelho.nome = aparelho.nome.slice(0..MAX_LEN-3) + "..."
+    }
 
     Box(
         modifier = Modifier

@@ -25,7 +25,7 @@ import java.net.ConnectException
 @Serializable
 data class AparelhoJSON(
     @SerialName("id") val id: String,
-    @SerialName("nome") val nome: String,
+    @SerialName("nome") var nome: String,
 )
 
 class AparelhosViewModel : ViewModel() {
