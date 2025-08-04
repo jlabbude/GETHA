@@ -56,7 +56,7 @@ class AparelhosViewModel : ViewModel() {
                 val aparelhos = Json.decodeFromString<List<AparelhoJSON>>(res)
                 for (aparelho in aparelhos) {
                     val byteArray =
-                        client.get("http://$IP/serve_image?ID=$aparelho.id").readBytes()
+                        client.get("http://$IP/serve_image?ID=${aparelho.id}").readBytes()
                     val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
                         ?: BitmapFactory.decodeResource(
                             Resources.getSystem(),

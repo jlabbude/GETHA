@@ -74,7 +74,7 @@ class ZoonoseViewModel : ViewModel() {
     private fun fetchZoonose() {
         viewModelScope.launch {
             try {
-                val zoonosesRes = client.get("http://$IP/serve_zoonose").bodyAsText()
+                val zoonosesRes = client.get("http://$IP/serve_zoonoses").bodyAsText()
                 _zoonoses.value = Json.decodeFromString<List<ZoonoseCardJSON>>(zoonosesRes)
             } catch (e: ConnectException) {
                 Log.e("ZoonoseViewModel", "Connection error", e)

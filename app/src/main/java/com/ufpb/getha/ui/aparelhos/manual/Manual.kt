@@ -42,7 +42,7 @@ fun ManualScreen(aparelhoId: String) {
     LaunchedEffect(Unit) {
         Log.w("Getha", "Item id is $aparelhoId")
         val byteArray = HttpClient(Android).get(
-            "http://$IP/serve_manual?id=${aparelhoId}"
+            "http://$IP/serve_manual?ID=${aparelhoId}"
         ).readBytes()
 
         pages.value = renderPdf(context, byteArray)

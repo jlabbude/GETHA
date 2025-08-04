@@ -147,7 +147,7 @@ fun ImageButton(bitmap: Bitmap , aparelho: AparelhoJSON , navController: NavCont
             DropdownMenuItem(
                 text = { Text("Manual", color = lighterDarkGray) },
                 onClick = {
-                    navController.navigate("nav_manual/$aparelho.id")
+                    navController.navigate("nav_manual/${aparelho.id}")
                     expanded.value = false
                 },
                 leadingIcon = {
@@ -160,7 +160,7 @@ fun ImageButton(bitmap: Bitmap , aparelho: AparelhoJSON , navController: NavCont
             DropdownMenuItem(
                 text = { Text("Vídeo", color = lighterDarkGray) },
                 onClick = {
-                    navController.navigate("nav_video/$aparelho.id")
+                    navController.navigate("nav_video/${aparelho.id}")
                     expanded.value = false
                 },
                 leadingIcon = {

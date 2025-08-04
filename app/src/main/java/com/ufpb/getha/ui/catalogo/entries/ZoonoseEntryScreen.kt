@@ -85,7 +85,7 @@ fun ZoonoseEntryScreen(zoonoseID: String) {
     LaunchedEffect(Unit) {
         zoonose.value = Json.decodeFromString<ZoonoseEntryJSON>(
             HttpClient(Android).get(
-                "http://$IP/get_zoonose_full?id=$zoonoseID"
+                "http://$IP/get_zoonose_full?ID=$zoonoseID"
             ).bodyAsText()
         )
     }
