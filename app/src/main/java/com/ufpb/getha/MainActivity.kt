@@ -193,7 +193,7 @@ fun NavigationDrawerContent() {
             }
             composable("nav_zoonose_full/{zoonoseId}") { backStackEntry ->
                 val zoonoseId = backStackEntry.arguments?.getString("zoonoseId")!!
-                ZoonoseEntryScreen(zoonoseID = zoonoseId)
+                ZoonoseEntryScreen(zoonoseId)
             }
         }
     }

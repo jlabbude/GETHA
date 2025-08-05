@@ -284,7 +284,7 @@ fun ZoonoseCard(
             }
         },
         onClick = {
-            navController.navigate("nav_zoonose_full/$id")
+            navController.navigate("nav_zoonose_full/${id}")
         }
     )
 }

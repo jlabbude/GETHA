@@ -65,7 +65,6 @@ import java.io.InputStream
 
 @Serializable
 data class ZoonoseEntryJSON(
-    val id: String,
     val nome: String,
     @SerialName("nome_cientifico")
     val nomeCientifico: String,
@@ -74,7 +73,7 @@ data class ZoonoseEntryJSON(
     val transmissoes: List<String>,
     val vetores: List<String>,
     val regioes: List<String>,
-    val profilaxia: List<String>,
+    val profilaxias: List<String>,
     val diagnosticos: List<String>,
     val descricao: String,
 )
@@ -101,7 +100,6 @@ fun ZoonoseEntryScreen(zoonoseID: String) {
 @Preview
 fun ZoonoseCatalog(
     zoonose: ZoonoseEntryJSON = ZoonoseEntryJSON(
-        "1",
         "Rabies",
         "Rabies lyssavirus",
         Organismo.Virus.string,
@@ -289,7 +287,7 @@ fun ZoonoseCatalog(
                 ZoonoseInfoCell("Transmissões", zoonose.transmissoes.joinToString())
                 ZoonoseInfoCell("Vetores", zoonose.vetores.joinToString())
                 ZoonoseInfoCell("Regiões de incidência", zoonose.regioes.joinToString())
-                ZoonoseInfoCell("Profilaxia", zoonose.profilaxia.joinToString())
+                ZoonoseInfoCell("Profilaxia", zoonose.profilaxias.joinToString())
                 ZoonoseInfoCell("Diagnosticos", zoonose.diagnosticos.joinToString())
             }
         }

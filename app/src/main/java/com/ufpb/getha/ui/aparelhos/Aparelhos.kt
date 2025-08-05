@@ -17,7 +17,6 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,16 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ufpb.getha.R
@@ -107,10 +102,6 @@ fun ImageButton(
 
     var lighterDarkGray = Color(0xFF666666)
 
-    if (aparelho.nome.length > MAX_LEN) {
-        aparelho.nome = aparelho.nome.slice(0..MAX_LEN-3) + "..."
-    }
-
     Box(
         modifier = Modifier
             .padding(8.dp)
@@ -129,22 +120,6 @@ fun ImageButton(
             )
 
     ) {
-        Text(
-            aparelho.nome,
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .align(androidx.compose.ui.Alignment.BottomCenter)
-                .zIndex(1f),
-            fontSize = 48.sp,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                shadow = Shadow(
-                    color = Color(0x40000000),
-                    offset = Offset(3.0f, 3.0f)
-                ),
-                fontSize = 64.sp
-            ),
-            color = Color(0xFF0B4C0E)
-        )
         Image(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = null,
